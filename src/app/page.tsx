@@ -86,7 +86,6 @@ export default function Home() {
       {/* 3. SECTION EXPERTISE TECHNIQUE (TECH/PORTFOLIO) */}
       <section className="py-32 px-6 md:px-12 bg-secondary/30 border-b border-border">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-8">Ingénierie & Innovation</h2>
           <h3 className="text-5xl md:text-7xl font-display font-bold text-center leading-tight mb-20">
             L'innovation par la <br className="hidden md:block" />
             <span className="text-primary font-medium italic underline underline-offset-10">rigueur technique.</span>

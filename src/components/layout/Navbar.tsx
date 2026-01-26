@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X, Globe } from "lucide-react";
 
@@ -15,6 +16,7 @@ const navItems = [
 ];
 
 export const Navbar = () => {
+    const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [lang, setLang] = useState<"FR" | "EN">("FR");
@@ -43,15 +45,28 @@ export const Navbar = () => {
 
                 {/* Desktop Nav */}
                 <div className="hidden lg:flex items-center gap-10">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.link}
-                            className="text-[13px] font-bold uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors"
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.link || (item.link !== "/" && pathname.startsWith(item.link));
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.link}
+                                className={cn(
+                                    "text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative py-1",
+                                    isActive ? "text-primary" : "text-foreground/60 hover:text-primary"
+                                )}
+                            >
+                                {item.name}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="nav-underline"
+                                        className="absolute -bottom-1 left-0 right-0 h-[2px] bg-primary"
+                                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                    />
+                                )}
+                            </Link>
+                        );
+                    })}
 
                     <div className="flex items-center gap-4 pl-4 border-l border-border">
                         <button
@@ -95,16 +110,23 @@ export const Navbar = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="absolute top-full left-0 right-0 bg-background border-b border-border lg:hidden flex flex-col p-8 gap-6 overflow-hidden"
                     >
-                        {navItems.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.link}
-                                className="text-xl font-display font-bold border-b border-border pb-4 last:border-0"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {item.name}
-                            </Link>
-                        ))}
+                        {navItems.map((item) => {
+                            const isActive = pathname === item.link || (item.link !== "/" && pathname.startsWith(item.link));
+                            return (
+                                <Link
+                                    key={item.name}
+                                    href={item.link}
+                                    className={cn(
+                                        "text-3xl font-display font-bold border-b border-border pb-6 last:border-0 flex items-center justify-between",
+                                        isActive ? "text-primary" : "text-foreground"
+                                    )}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {item.name}
+                                    {isActive && <div className="w-2 h-2 rounded-full bg-primary" />}
+                                </Link>
+                            );
+                        })}
                         <Link
                             href="/contact"
                             className="bg-primary text-white text-center py-4 rounded-sm font-bold uppercase tracking-widest mt-4"

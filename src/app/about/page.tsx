@@ -12,7 +12,7 @@ export default function AboutPage() {
                         <div className="relative aspect-[3/4] bg-secondary border border-border overflow-hidden shadow-2xl">
                             <img
                                 src="/assets/images/kim.jpg"
-                                alt="Monsieur X - Portrait"
+                                alt="Mohamed Asikim TCHAHAYE - Portrait"
                                 className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 hover:scale-105"
                             />
                             {/* Subtle light overlay instead of placeholder */}
@@ -25,7 +25,7 @@ export default function AboutPage() {
 
                     <div className="lg:col-span-7 space-y-12">
                         <h1 className="text-6xl md:text-8xl font-display font-bold leading-none">
-                            Mohamed <br /> <span className="text-primary italic font-normal text-[0.8em]">Asikim.</span>
+                            Mohamed Asikim <br /> <span className="text-primary italic font-normal text-[0.8em]">TCHAHAYE.</span>
                         </h1>
                         <div className="space-y-8 text-xl text-muted-foreground leading-loose italic border-l-4 border-primary/20 pl-10">
                             <p>"Je bâtis des systèmes avec la même précision que je cisèle mes métaphores."</p>
@@ -49,19 +49,19 @@ export default function AboutPage() {
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12">
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Expérience Core</h4>
-                        <p className="text-4xl font-display font-bold">10+ Années</p>
+                        <p className="text-4xl font-display font-bold">5+ Années</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Expertise Technique</h4>
-                        <p className="text-4xl font-display font-bold">Énergies/IoT</p>
+                        <p className="text-4xl font-display font-bold">Électrique/Design</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Innovation</h4>
-                        <p className="text-4xl font-display font-bold">3 Pays</p>
+                        <p className="text-4xl font-display font-bold">Canada/Maroc</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Interventions</h4>
-                        <p className="text-4xl font-display font-bold">Conférencier</p>
+                        <p className="text-4xl font-display font-bold">Auteur/Ingénieur</p>
                     </div>
                 </div>
             </section>

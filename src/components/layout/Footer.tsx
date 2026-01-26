@@ -14,13 +14,10 @@ export const Footer = () => {
                         Une vision unifiée pour un monde en constante évolution.
                     </p>
                     <div className="flex gap-6 mt-10">
-                        <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                            <Twitter size={20} />
-                        </a>
-                        <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                        <a href="https://www.linkedin.com/in/asikim-mohamed-tchahaye-605700131" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                             <Linkedin size={20} />
                         </a>
-                        <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                        <a href="mailto:atcmohamed16@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
                             <Mail size={20} />
                         </a>
                     </div>
@@ -39,9 +36,9 @@ export const Footer = () => {
                 <div>
                     <h4 className="text-xs font-bold uppercase tracking-widest mb-10 text-foreground/40">Bureau</h4>
                     <ul className="space-y-6 text-[13px] font-medium text-muted-foreground">
-                        <li>Casablanca, Maroc</li>
-                        <li>contact@kimmcorp.com</li>
-                        <li>+212 (0) 5XX XX XX XX</li>
+                        <li>Vancouver, Canada</li>
+                        <li><a href="mailto:atcmohamed16@gmail.com" className="hover:text-primary transition-colors">atcmohamed16@gmail.com</a></li>
+                        <li><a href="tel:+14034010528" className="hover:text-primary transition-colors">+1 403 401 0528</a></li>
                     </ul>
                 </div>
             </div>

@@ -22,7 +22,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">E-mail Professionnel</span>
-                                    <p className="text-lg font-bold">contact@kimmcorp.com</p>
+                                    <a href="mailto:atcmohamed16@gmail.com" className="block text-lg font-bold hover:text-primary transition-colors">atcmohamed16@gmail.com</a>
                                 </div>
                             </div>
 
@@ -32,7 +32,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Réseau Professionnel</span>
-                                    <p className="text-lg font-bold">linked.in/monsieur-x</p>
+                                    <a href="https://www.linkedin.com/in/asikim-mohamed-tchahaye-605700131" target="_blank" rel="noopener noreferrer" className="block text-lg font-bold hover:text-primary transition-colors">linkedin.com/in/asikim-mohamed...</a>
                                 </div>
                             </div>
 
@@ -42,7 +42,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Urgence & WhatsApp</span>
-                                    <p className="text-lg font-bold">+212 (0) 6XX XX XX XX</p>
+                                    <a href="https://wa.me/14034010528" target="_blank" rel="noopener noreferrer" className="block text-lg font-bold hover:text-primary transition-colors">+1 403 401 0528</a>
                                 </div>
                             </div>
                         </div>
