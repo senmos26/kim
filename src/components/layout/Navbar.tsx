@@ -52,7 +52,7 @@ export const Navbar = () => {
                                 key={item.name}
                                 href={item.link}
                                 className={cn(
-                                    "text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative py-1",
+                                    "text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative py-1",
                                     isActive ? "text-primary" : "text-foreground/60 hover:text-primary"
                                 )}
                             >
@@ -71,13 +71,13 @@ export const Navbar = () => {
                     <div className="flex items-center gap-4 pl-4 border-l border-border">
                         <button
                             onClick={() => setLang(lang === "FR" ? "EN" : "FR")}
-                            className="flex items-center gap-2 text-[12px] font-bold text-foreground/40 hover:text-primary transition-colors"
+                            className="flex items-center gap-2 text-[10px] font-bold text-foreground/40 hover:text-primary transition-colors"
                         >
                             <Globe size={14} /> {lang}
                         </button>
                         <Link
                             href="/contact"
-                            className="bg-primary text-white px-6 py-2.5 rounded-sm text-[12px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                            className="bg-primary text-white px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                         >
                             Contact
                         </Link>
@@ -117,7 +117,7 @@ export const Navbar = () => {
                                     key={item.name}
                                     href={item.link}
                                     className={cn(
-                                        "text-3xl font-display font-bold border-b border-border pb-6 last:border-0 flex items-center justify-between",
+                                        "text-2xl font-display font-bold border-b border-border pb-6 last:border-0 flex items-center justify-between",
                                         isActive ? "text-primary" : "text-foreground"
                                     )}
                                     onClick={() => setMobileMenuOpen(false)}

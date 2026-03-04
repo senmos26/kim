@@ -25,7 +25,7 @@ export const Footer = () => {
 
                 <div>
                     <h4 className="text-xs font-bold uppercase tracking-widest mb-10 text-foreground/40">Navigation</h4>
-                    <ul className="space-y-6 text-[13px] font-bold uppercase tracking-widest text-foreground/70">
+                    <ul className="space-y-6 text-[11px] font-bold uppercase tracking-widest text-foreground/70">
                         <li><Link href="/" className="hover:text-primary transition-colors">Accueil</Link></li>
                         <li><Link href="/books" className="hover:text-primary transition-colors">Ouvrages</Link></li>
                         <li><Link href="/blog" className="hover:text-primary transition-colors">Articles</Link></li>
@@ -35,14 +35,14 @@ export const Footer = () => {
 
                 <div>
                     <h4 className="text-xs font-bold uppercase tracking-widest mb-10 text-foreground/40">Bureau</h4>
-                    <ul className="space-y-6 text-[13px] font-medium text-muted-foreground">
+                    <ul className="space-y-6 text-[11px] font-medium text-muted-foreground">
                         <li>Vancouver, Canada</li>
                         <li><a href="mailto:atcmohamed16@gmail.com" className="hover:text-primary transition-colors">atcmohamed16@gmail.com</a></li>
                         <li><a href="tel:+14034010528" className="hover:text-primary transition-colors">+1 403 401 0528</a></li>
                     </ul>
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto mt-24 pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="max-w-7xl mx-auto mt-24 pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 <div>© {new Date().getFullYear()} KIMMCORP. Tous droits réservés.</div>
                 <div className="flex gap-10">
                     <a href="#" className="hover:text-primary transition-colors">Mentions Légales</a>

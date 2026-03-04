@@ -80,7 +80,7 @@ export const ProjectCard = ({
             {/* Content Area */}
             <div className="p-10 flex flex-col justify-between flex-grow">
                 <div>
-                    <h3 className="text-3xl font-display font-bold mb-6 italic group-hover:text-primary transition-colors">
+                    <h3 className="text-xl md:text-2xl font-display font-bold mb-6 italic group-hover:text-primary transition-colors">
                         {title}
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-8">
@@ -102,7 +102,7 @@ export const ProjectCard = ({
                         href={href}
                         className="inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-foreground/40 hover:text-primary transition-colors z-20 group/link"
                     >
-                        DÉTAILS DU PROJET <ArrowRight size={14} className="group-hover/link:translate-x-2 transition-transform" />
+                        DÉTAILS DU PROJET
                     </Link>
                     <div className="text-foreground/5 group-hover:text-primary/10 transition-colors duration-500">
                         <ArrowUpRight size={40} />

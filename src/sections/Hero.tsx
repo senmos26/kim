@@ -9,41 +9,51 @@ export const Hero = () => {
         <section className="relative min-h-[85vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
             <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
 
-                <div className="lg:col-span-7 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
+                <div className="lg:col-span-7 relative z-10 flex flex-col justify-center">
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="space-y-8"
+    >
+       
 
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-[4.5rem] font-bold tracking-tight mb-8 leading-[0.95] text-foreground">
-                            De l'Électronique <br />
-                            <span className="text-primary italic font-normal font-display">au Verbe.</span>
-                        </h1>
-                        <p className="text-base md:text-lg text-muted-foreground mb-12 max-w-xl leading-relaxed italic border-l-4 border-primary/20 pl-8 font-sans">
-                            L'ingénierie des systèmes rencontre la finesse de l'écriture. Bienvenue dans l'univers de <strong>Mohamed Asikim TCHAHAYE</strong>, où chaque innovation est une histoire et chaque page une architecture.
-                        </p>
+        {/* Titre Impactant */}
+        <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tighter">
+            Concevoir le système. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
+                Écrire l'avenir.
+            </span>
+        </h1>
 
-                        <div className="flex flex-wrap gap-8 items-center">
-                            <Link
-                                href="/books"
-                                className="group relative flex items-center gap-4 text-xs font-bold uppercase tracking-[0.2em] transition-all"
-                            >
-                                Ses Œuvres Littéraires
-                                <div className="p-4 bg-primary text-white rounded-full group-hover:scale-110 transition-transform shadow-xl shadow-primary/20">
-                                    <ArrowRight size={20} />
-                                </div>
-                            </Link>
+        {/* Description avec une structure "manifeste" */}
+        <div className="bg-gradient-to-br from-white to-neutral-50 p-6 rounded-lg border-l-4 border-primary shadow-sm">
+            <p className="text-lg text-neutral-600 leading-relaxed font-light">
+                À la croisée de l'ingénierie rigoureuse et de la puissance narrative.
+                <br />
+                Je suis <strong className="text-foreground">Mohamed Asikim TCHAHAYE</strong>, 
+                architecte de systèmes complexes par le calcul, bâtisseur d'univers par la plume.
+            </p>
+        </div>
 
-                            <Link
-                                href="/portfolio"
-                                className="text-[10px] font-bold uppercase tracking-[0.2em] border-b-2 border-primary/10 hover:border-primary transition-all pb-1"
-                            >
-                                Projets d'Ingénierie
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
+        {/* Boutons modernes */}
+        <div className="flex items-center gap-4 pt-4">
+            <Link
+                href="/books"
+                className="px-8 py-4 bg-primary text-white font-semibold uppercase tracking-wider text-xs hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/30 rounded-none"
+            >
+                Lire ses écrits
+            </Link>
+
+            <Link
+                href="/portfolio"
+                className="px-8 py-4 bg-transparent border border-neutral-300 text-foreground font-semibold uppercase tracking-wider text-xs hover:border-primary hover:text-primary transition-all rounded-none"
+            >
+                Explorer ses projets
+            </Link>
+        </div>
+    </motion.div>
+</div>
 
                 <div className="lg:col-span-5 hidden lg:block">
                     <motion.div

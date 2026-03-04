@@ -53,7 +53,7 @@ export default function BooksPage() {
             {/* Header */}
             <section className="pt-32 pb-20 px-6 md:px-12 text-center border-b border-border">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="text-5xl md:text-7xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter">
                         La Collection <span className="text-primary italic font-normal">Éditoriale.</span>
                     </h1>
                     <p className="text-xl text-muted-foreground italic max-w-xl mx-auto border-y border-primary/10 py-8 leading-relaxed font-sans">

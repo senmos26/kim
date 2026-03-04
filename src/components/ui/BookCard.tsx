@@ -65,7 +65,7 @@ export const BookCard = ({
 
                     {/* Content on Hover for Cover */}
                     <div className="absolute inset-0 flex flex-col justify-end p-10 translate-y-10 opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 transition-all duration-700 z-20">
-                        <h4 className="text-2xl font-display font-bold text-white mb-4 italic leading-tight">
+                        <h4 className="text-xl font-display font-bold text-white mb-4 italic leading-tight">
                             {title}
                         </h4>
                         <p className="text-white/70 text-sm leading-relaxed line-clamp-2 mb-8 italic">
@@ -89,7 +89,7 @@ export const BookCard = ({
             {/* Static Info Below (Visible always for better UX on mobile/scroll) */}
             <div className="mt-8 flex flex-col gap-4">
                 <div className="space-y-2">
-                    <h3 className="text-2xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
+                    <h3 className="text-xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
                         {title}
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 lg:opacity-100 lg:group-hover:opacity-0 transition-opacity duration-300">

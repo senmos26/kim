@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lora, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -32,7 +33,9 @@ export default function RootLayout({
           "antialiased bg-background text-foreground min-h-screen font-sans"
         )}
       >
-        {children}
+        <SmoothScrollProvider>
+          {children}
+        </SmoothScrollProvider>
       </body>
     </html>
   );

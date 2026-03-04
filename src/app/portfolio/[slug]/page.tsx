@@ -69,7 +69,7 @@ export default function PortfolioDetailPage({ params }: { params: Promise<{ slug
                                 <ShareButton title={project.title} url={`/portfolio/${slug}`} variant="outline" />
                             </div>
 
-                            <h1 className="text-6xl md:text-[6.5rem] font-display font-bold leading-[0.95] text-foreground mb-12 tracking-tighter italic whitespace-pre-line">
+                            <h1 className="text-5xl md:text-6xl font-display font-bold leading-[0.95] text-foreground mb-12 tracking-tighter italic whitespace-pre-line">
                                 {project.title.replace(' ', '\n')}
                             </h1>
 

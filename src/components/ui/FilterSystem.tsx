@@ -36,7 +36,7 @@ export const FilterSystem = ({
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder={placeholder}
-                    className="w-full bg-secondary/30 border border-border/50 hover:border-primary/20 rounded-sm py-4 px-14 text-[10px] font-bold uppercase tracking-[0.2em] focus:outline-none focus:ring-1 focus:ring-primary focus:bg-background transition-all h-full min-h-[56px]"
+                    className="w-full bg-secondary/30 border border-border/50 hover:border-primary/20 rounded-sm py-4 px-14 text-[9px] font-bold uppercase tracking-[0.2em] focus:outline-none focus:ring-1 focus:ring-primary focus:bg-background transition-all h-full min-h-[56px]"
                 />
             </div>
 

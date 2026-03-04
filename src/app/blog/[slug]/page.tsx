@@ -62,7 +62,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                         <ShareButton title={article.title} url={`/blog/${slug}`} variant="outline" />
                     </div>
 
-                    <h1 className="text-5xl md:text-[5.5rem] font-display font-bold leading-[1.1] text-foreground tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] text-foreground tracking-tighter">
                         {article.title}.
                     </h1>
 

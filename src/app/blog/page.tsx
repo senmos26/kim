@@ -98,7 +98,7 @@ export default function BlogPage() {
             <section className="pt-32 pb-12 px-6 md:px-12 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <div className="max-w-3xl mb-16">
-                        <h1 className="text-5xl md:text-[6rem] font-display font-bold leading-[0.9] mb-8 text-foreground tracking-tighter">
+                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-[0.9] mb-8 text-foreground tracking-tighter">
                             Pensées & <span className="text-primary italic font-normal">Analyses.</span>
                         </h1>
                         <p className="text-xl text-muted-foreground italic border-l-4 border-primary/20 pl-10 leading-relaxed max-w-2xl font-sans">
@@ -127,7 +127,7 @@ export default function BlogPage() {
             <section className="py-24 px-6 md:px-12 bg-[#faf9f6]">
                 <div className="max-w-7xl mx-auto min-h-[400px]">
                     {filteredArticles.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                             {filteredArticles.map((art, idx) => (
                                 <ArticleCard
                                     key={art.id}

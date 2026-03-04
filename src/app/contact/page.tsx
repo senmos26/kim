@@ -10,7 +10,7 @@ export default function ContactPage() {
             <section className="pt-48 pb-32 px-6 md:px-12 border-b border-border">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
                     <div className="lg:col-span-5 space-y-12">
-                        <h1 className="text-6xl md:text-8xl font-display font-bold leading-none">Entrons en <span className="text-primary italic font-normal">Contact.</span></h1>
+                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-none">Entrons en <span className="text-primary italic font-normal">Contact.</span></h1>
                         <p className="text-xl text-muted-foreground italic leading-relaxed max-w-sm">
                             "Toute grande collaboration commence par un premier mot, une première idée partagée."
                         </p>

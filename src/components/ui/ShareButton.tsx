@@ -104,7 +104,7 @@ export const ShareButton = ({ title, url, className, variant = "outline" }: Shar
                         >
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground">Partager</h4>
+                                    <h4 className="text-[9px] font-bold uppercase tracking-widest text-foreground">Partager</h4>
                                     <p className="text-[9px] text-muted-foreground uppercase tracking-widest mt-1">Diffusez cette œuvre</p>
                                 </div>
                                 <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-foreground p-1">
@@ -120,7 +120,7 @@ export const ShareButton = ({ title, url, className, variant = "outline" }: Shar
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className={cn(
-                                            "flex items-center gap-4 p-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all rounded-sm text-foreground/70 hover:text-foreground",
+                                            "flex items-center gap-4 p-3 text-[9px] font-bold uppercase tracking-[0.2em] transition-all rounded-sm text-foreground/70 hover:text-foreground",
                                             link.color
                                         )}
                                     >
@@ -132,7 +132,7 @@ export const ShareButton = ({ title, url, className, variant = "outline" }: Shar
                                 <div className="pt-4 mt-4 border-t border-border">
                                     <button
                                         onClick={handleCopy}
-                                        className="w-full flex items-center justify-between gap-4 p-4 text-[10px] font-bold uppercase tracking-[0.2em] bg-secondary text-foreground/70 hover:bg-primary hover:text-white transition-all rounded-sm"
+                                        className="w-full flex items-center justify-between gap-4 p-4 text-[9px] font-bold uppercase tracking-[0.2em] bg-secondary text-foreground/70 hover:bg-primary hover:text-white transition-all rounded-sm"
                                     >
                                         <span className="flex items-center gap-3">
                                             {copied ? <Check size={16} className="text-white" /> : <Copy size={16} className="text-foreground/50" />}

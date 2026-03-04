@@ -24,7 +24,7 @@ export default function AboutPage() {
                     </div>
 
                     <div className="lg:col-span-7 space-y-12">
-                        <h1 className="text-6xl md:text-8xl font-display font-bold leading-none">
+                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-none">
                             Mohamed Asikim <br /> <span className="text-primary italic font-normal text-[0.8em]">TCHAHAYE.</span>
                         </h1>
                         <div className="space-y-8 text-xl text-muted-foreground leading-loose italic border-l-4 border-primary/20 pl-10">

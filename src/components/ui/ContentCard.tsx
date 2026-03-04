@@ -67,7 +67,7 @@ export const ContentCard = ({
                     {/* Editorial Date Badge - Bottom Left */}
                     {(visualData.title || visualData.subtitle) && (
                         <div className="absolute bottom-6 left-6 z-20 flex flex-col transition-transform duration-700 lg:group-hover:translate-x-1">
-                            <div className="bg-primary text-white text-3xl font-display font-bold px-4 pt-3 pb-1 leading-none shadow-xl">
+                            <div className="bg-primary text-2xl font-display font-bold px-4 pt-3 pb-1 leading-none shadow-xl">
                                 {visualData.title}
                             </div>
                             <div className="bg-background/90 backdrop-blur-md text-foreground text-[9px] font-bold uppercase tracking-[0.3em] px-4 py-2 border-x border-b border-border shadow-lg">
@@ -101,7 +101,7 @@ export const ContentCard = ({
                     <span className="text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/20 bg-primary/5 px-3 py-1.5 inline-block">
                         {category}
                     </span>
-                    <h3 className="text-3xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
+                    <h3 className="text-xl md:text-2xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
                         {title}
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 italic">

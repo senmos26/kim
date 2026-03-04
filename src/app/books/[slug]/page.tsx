@@ -92,7 +92,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
                                 <ShareButton title={book.title} url={`/books/${slug}`} variant="outline" className="opacity-80 hover:opacity-100" />
                             </div>
 
-                            <h1 className="text-5xl md:text-[6rem] font-display font-bold leading-[0.95] text-foreground mb-12 tracking-tighter">
+                            <h1 className="text-4xl md:text-6xl font-display font-bold leading-[0.95] text-foreground mb-12 tracking-tighter">
                                 {book.title}.
                             </h1>
 

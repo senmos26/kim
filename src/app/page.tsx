@@ -1,13 +1,17 @@
+"use client";
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/sections/Hero";
-import { Book, Cpu, Calendar, ArrowRight } from "lucide-react";
+import { Book, Cpu, Calendar, ArrowRight, User, Clock, Tag } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { BookCard } from "@/components/ui/BookCard";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { ArticleCard } from "@/components/ui/ArticleCard";
+import { EventCard } from "@/components/ui/EventCard";
+import { upcomingEvents } from "@/lib/data";
 
 export default function Home() {
   return (
@@ -19,28 +23,29 @@ export default function Home() {
       <section className="py-32 px-6 md:px-12 bg-secondary/10 border-b border-border">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 gap-8">
-            <h3 className="text-5xl md:text-7xl font-display font-bold">Prochains <br /> <span className="text-primary italic font-normal">Rendez-vous.</span></h3>
+            <h3 className="text-4xl md:text-6xl font-display font-bold">Prochains <br /> <span className="text-primary italic font-normal">Rendez-vous.</span></h3>
             <Link href="/events" className="text-xs font-bold uppercase tracking-widest border-b-2 border-primary/20 pb-2 hover:border-primary transition-all">Tous les événements</Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {[
-              { id: "webinar-iot-2026", date: "12", month: "FÉVR. 2026", title: "Webinaire IoT 2026", desc: "Immersion dans les défis de l'électronique de demain.", cat: "CONFÉRENCE", image: "/assets/images/electronic_future_maroc_1769376061385.png" },
-              { id: "salon-livre-paris", date: "25", month: "MARS 2026", title: "Signature : Le Souffle", desc: "Rencontre et dédicace au Salon du Livre de Paris.", cat: "LITTÉRATURE", image: "/assets/images/souffle_idees_book_1769376079792.png" }
-            ].map((ev, idx) => (
-              <ContentCard
+          <div className="grid grid-cols-1 gap-12">
+            {upcomingEvents.slice(0, 2).map((ev, idx) => (
+              <EventCard
                 key={ev.id}
                 id={ev.id}
                 href={`/events/${ev.id}`}
                 title={ev.title}
                 desc={ev.desc}
                 category={ev.cat}
+                date={ev.date}
+                endDate={ev.endDate}
+                month={ev.month}
+                location={ev.location}
+                price={ev.price}
+                maxInscriptions={ev.maxInscriptions}
+                currentInscriptions={ev.currentInscriptions}
+                image={ev.image}
+                speakers={ev.speakers}
                 index={idx}
-                visualData={{
-                  title: ev.date,
-                  subtitle: ev.month,
-                  image: ev.image
-                }}
               />
             ))}
           </div>
@@ -53,7 +58,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
             <div className="max-w-2xl">
               <h2 className="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-6 underline underline-offset-8">Dernières Parutions</h2>
-              <h3 className="text-5xl md:text-7xl font-display font-bold leading-none italic">
+              <h3 className="text-4xl md:text-6xl font-display font-bold leading-none italic">
                 L'essence de la pensée <span className="font-normal text-primary">littéraire.</span>
               </h3>
             </div>
@@ -86,7 +91,7 @@ export default function Home() {
       {/* 3. SECTION EXPERTISE TECHNIQUE (TECH/PORTFOLIO) */}
       <section className="py-32 px-6 md:px-12 bg-secondary/30 border-b border-border">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <h3 className="text-5xl md:text-7xl font-display font-bold text-center leading-tight mb-20">
+          <h3 className="text-4xl md:text-6xl font-display font-bold text-center leading-tight mb-20">
             L'innovation par la <br className="hidden md:block" />
             <span className="text-primary font-medium italic underline underline-offset-10">rigueur technique.</span>
           </h3>
@@ -122,14 +127,15 @@ export default function Home() {
       <section className="py-32 px-6 md:px-12 bg-background border-b border-border">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 gap-8">
-            <h3 className="text-5xl md:text-7xl font-display font-bold">Réflexions <br /> <span className="text-muted-foreground italic font-normal">et Partages.</span></h3>
+            <h3 className="text-4xl md:text-6xl font-display font-bold">Réflexions <br /> <span className="text-muted-foreground italic font-normal">et Partages.</span></h3>
             <Link href="/blog" className="text-xs font-bold uppercase tracking-widest border-b-2 border-primary/20 pb-2 hover:border-primary transition-all">Consulter le blog</Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {[
               { id: "electronique-ecriture", cat: "Littérature", date: "12 JAN 2026", title: "Comment l'électronique influence l'écriture moderne ?", desc: "Une analyse profonde sur l'interaction entre les structures logiques et la créativité narrative.", image: "/assets/images/poesie_digitale_art_1769376168451.png" },
-              { id: "architecture-riscv", cat: "Technique", date: "05 JAN 2026", title: "L'architecture RISC-V : Un nouveau souffle.", desc: "Exploration technique des microcontrôleurs open-source et de leur impact sur l'industrie.", image: "bg-secondary/30" }
+              { id: "architecture-riscv", cat: "Technique", date: "05 JAN 2026", title: "L'architecture RISC-V : Un nouveau souffle.", desc: "Exploration technique des microcontrôleurs open-source et de leur impact sur l'industrie.", image: "/assets/images/riscv_architecture_chip_1769376111211.png" },
+              { id: "poesie-digitale", cat: "Littérature", date: "28 DÉC 2025", title: "La poésie comme refuge dans un monde digital", desc: "Redécouvrir le lyrisme à l'ère de l'intelligence artificielle et de l'automatisation.", image: "bg-secondary/30" }
             ].map((art, idx) => (
               <ArticleCard
                 key={art.id}

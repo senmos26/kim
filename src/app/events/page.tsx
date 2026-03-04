@@ -4,49 +4,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FilterSystem } from "@/components/ui/FilterSystem";
 import { ContentCard } from "@/components/ui/ContentCard";
+import { EventCard } from "@/components/ui/EventCard";
 
-const upcomingEvents = [
-    {
-        id: "webinar-iot-2026",
-        date: "12",
-        month: "FÉVR. 2026",
-        fullDate: "2026-02-12",
-        title: "L'Avenir de l'Électronique au Maroc",
-        desc: "Plongée dans les défis industriels et technologiques de la décennie à venir.",
-        cat: "CONFÉRENCE",
-        image: "/assets/images/electronic_future_maroc_1769376061385.png"
-    },
-    {
-        id: "salon-livre-paris",
-        date: "25",
-        month: "MARS 2026",
-        fullDate: "2026-03-25",
-        title: "Signature Littéraire : Le Souffle des Idées",
-        desc: "Rencontre exclusive et dédicace au Salon du Livre de Paris.",
-        cat: "LITTÉRATURE",
-        image: "/assets/images/souffle_idees_book_1769376079792.png"
-    },
-    {
-        id: "masterclass-arm-casa",
-        date: "10",
-        month: "AVRIL 2026",
-        fullDate: "2026-04-10",
-        title: "Masterclass : Architectures ARM Modernes",
-        desc: "Optimisation bas-niveau pour les systèmes embarqués de demain.",
-        cat: "WORKSHOP",
-        image: "/assets/images/masterclass_arm_workshop_1769376186504.png"
-    },
-    {
-        id: "conf-smartgrid-rabat",
-        date: "22",
-        month: "MAI 2026",
-        fullDate: "2026-05-22",
-        title: "Eco-Systèmes & SmartGrids",
-        desc: "Discussion sur l'intégration des énergies renouvelables via l'IoT.",
-        cat: "INNOVATION",
-        image: "bg-stone-100"
-    }
-];
+import { upcomingEvents } from "@/lib/data";
 
 const categories = ["CONFÉRENCE", "LITTÉRATURE", "WORKSHOP", "INNOVATION"];
 
@@ -91,7 +51,7 @@ export default function EventsPage() {
             <section className="pt-32 pb-16 px-6 md:px-12 border-b border-border">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
                     <div className="max-w-3xl">
-                        <h1 className="text-5xl md:text-7xl font-display font-bold leading-none mb-6 text-foreground tracking-tighter uppercase italic">
+                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-none mb-6 text-foreground tracking-tighter uppercase italic">
                             Agenda & <span className="text-primary italic font-normal">Rencontres.</span>
                         </h1>
                         <p className="text-xl text-muted-foreground italic border-l-4 border-primary/20 pl-10 max-w-2xl leading-relaxed font-sans">
@@ -124,19 +84,23 @@ export default function EventsPage() {
                     {filteredEvents.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                             {filteredEvents.map((ev, idx) => (
-                                <ContentCard
+                                <EventCard
                                     key={ev.id}
                                     id={ev.id}
                                     href={`/events/${ev.id}`}
                                     title={ev.title}
                                     desc={ev.desc}
                                     category={ev.cat}
+                                    date={ev.date}
+                                    endDate={ev.endDate}
+                                    month={ev.month}
+                                    location={ev.location}
+                                    price={ev.price}
+                                    maxInscriptions={ev.maxInscriptions}
+                                    currentInscriptions={ev.currentInscriptions}
+                                    image={ev.image && ev.image.startsWith("/") ? ev.image : undefined}
+                                    speakers={ev.speakers || []}
                                     index={idx}
-                                    visualData={{
-                                        title: ev.date,
-                                        subtitle: ev.month,
-                                        image: ev.image
-                                    }}
                                 />
                             ))}
                         </div>
