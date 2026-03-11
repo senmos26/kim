@@ -5,50 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { FilterSystem } from "@/components/ui/FilterSystem";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 
-const articles = [
-    {
-        id: "electronique-ecriture",
-        cat: "LITTÉRATURE",
-        date: "12 JAN 2026",
-        title: "Comment l'électronique influence l'écriture moderne ?",
-        desc: "Une analyse profonde sur l'interaction entre les structures logiques et la créativité narrative.",
-        image: "/assets/images/poesie_digitale_art_1769376168451.png",
-        tags: ["Philosophie", "Hardware", "Design"],
-        readTime: "8 min"
-    },
-    {
-        id: "architecture-riscv",
-        cat: "TECHNIQUE",
-        date: "05 JAN 2026",
-        title: "L'architecture RISC-V : Un nouveau souffle",
-        desc: "Exploration technique des microcontrôleurs open-source et de leur impact sur l'industrie.",
-        image: "/assets/images/riscv_architecture_chip_1769376111211.png",
-        tags: ["RISC-V", "Open Source", "Innovation"],
-        readTime: "12 min"
-    },
-    {
-        id: "poesie-digitale",
-        cat: "LITTÉRATURE",
-        date: "28 DÉC 2025",
-        title: "La poésie comme refuge dans un monde digital",
-        desc: "Redécouvrir le lyrisme à l'ère de l'intelligence artificielle et de l'automatisation.",
-        image: "bg-secondary/30",
-        tags: ["Art", "IA", "Humanité"],
-        readTime: "6 min"
-    },
-    {
-        id: "optimisation-fpga",
-        cat: "TECHNIQUE",
-        date: "15 DÉC 2025",
-        title: "Optimisation de systèmes sur FPGA",
-        desc: "Retour d'expérience sur le design hardware pour des applications de vision par ordinateur.",
-        image: "bg-stone-100",
-        tags: ["FPGA", "VHDL", "Vision"],
-        readTime: "10 min"
-    }
-];
-
-const categories = ["LITTÉRATURE", "TECHNIQUE"];
+import { articles, articleCategories } from "@/data/articles";
 
 const sortOptions = [
     { label: "Plus récent", value: "newest" },
@@ -65,10 +22,10 @@ export default function BlogPage() {
         let result = articles.filter((art) => {
             const matchesSearch =
                 art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                art.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 art.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-            const matchesCategory = selectedCategory === "ALL" || art.cat === selectedCategory;
+            const matchesCategory = selectedCategory === "ALL" || art.category === selectedCategory;
 
             return matchesSearch && matchesCategory;
         });
@@ -98,7 +55,7 @@ export default function BlogPage() {
             <section className="pt-32 pb-12 px-6 md:px-12 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <div className="max-w-3xl mb-16">
-                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-[0.9] mb-8 text-foreground tracking-tighter">
+                        <h1 className="text-3xl md:text-5xl font-display font-bold leading-[0.9] mb-8 text-foreground tracking-tighter">
                             Pensées & <span className="text-primary italic font-normal">Analyses.</span>
                         </h1>
                         <p className="text-xl text-muted-foreground italic border-l-4 border-primary/20 pl-10 leading-relaxed max-w-2xl font-sans">
@@ -113,7 +70,7 @@ export default function BlogPage() {
                             onSearchChange={setSearchQuery}
                             selectedCategory={selectedCategory}
                             onCategoryChange={setSelectedCategory}
-                            categories={categories}
+                            categories={articleCategories}
                             sortBy={sortBy}
                             onSortChange={setSortBy}
                             sortOptions={sortOptions}
@@ -134,12 +91,12 @@ export default function BlogPage() {
                                     id={art.id}
                                     href={`/blog/${art.id}`}
                                     title={art.title}
-                                    desc={art.desc}
-                                    category={art.cat}
+                                    desc={art.excerpt}
+                                    category={art.category}
                                     date={art.date}
                                     image={art.image}
                                     tags={art.tags}
-                                    readTime={art.readTime}
+                                    readTime={art.time}
                                     index={idx}
                                     onTagClick={handleTagClick}
                                 />

@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ArrowLeft, Calendar, MapPin, Share2, MessageSquare, Clock, Users, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { ShareButton } from "@/components/ui/ShareButton";
-import { upcomingEvents } from "@/lib/data";
+import { upcomingEvents } from "@/data/events";
 import { SpeakerCard } from "@/components/ui/SpeakerCard";
 import { RegistrationModal } from "@/components/ui/RegistrationModal";
 import { motion } from "framer-motion";
@@ -62,7 +62,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-3xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-8 italic tracking-tighter"
+                                className="text-2xl md:text-4xl lg:text-5xl font-display font-bold leading-tight mb-8 italic tracking-tighter"
                             >
                                 {event.title}
                             </motion.h1>
@@ -166,7 +166,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                             <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-primary flex items-center gap-4 mb-6">
                                 <Users size={16} /> Les Intervenants
                             </span>
-                            <h2 className="text-5xl md:text-6xl font-display font-bold italic tracking-tighter">Experts & Visionnaires.</h2>
+                            <h2 className="text-4xl md:text-5xl font-display font-bold italic tracking-tighter">Experts & Visionnaires.</h2>
                         </div>
                     </div>
 
@@ -189,7 +189,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-primary flex items-center gap-4 mb-6">
                             <BookOpen size={16} /> Programme
                         </span>
-                        <h2 className="text-5xl md:text-6xl font-display font-bold italic tracking-tighter mb-10">L'Agenda de la session.</h2>
+                        <h2 className="text-4xl md:text-5xl font-display font-bold italic tracking-tighter mb-10">L'Agenda de la session.</h2>
                         <p className="text-muted-foreground leading-relaxed italic border-l-4 border-primary/20 pl-10">
                             Une immersion structurée pour maximiser l'apprentissage et l'interaction.
                         </p>

@@ -57,7 +57,7 @@ export default function PortfolioPage() {
             <section className="pt-32 pb-16 px-6 md:px-12 border-b border-border">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
                     <div className="max-w-2xl">
-                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter uppercase italic">
+                        <h1 className="text-3xl md:text-5xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter uppercase italic">
                             Ingénierie & <span className="text-primary italic font-normal">Savoir-faire.</span>
                         </h1>
                         <p className="text-lg text-muted-foreground italic border-l-4 border-primary/20 pl-8 leading-relaxed font-sans max-w-xl">

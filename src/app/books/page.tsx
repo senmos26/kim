@@ -5,13 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { FilterSystem } from "@/components/ui/FilterSystem";
 import { BookCard } from "@/components/ui/BookCard";
 
-const books = [
-    { id: "souffle-des-idees", title: "Le Souffle des Idées", cat: "LITTÉRATURE / ESSAI", desc: "Une œuvre majeure explorant les tensions fertiles entre la logique de l'ingénieur et l'intuition du poète.", image: "/assets/images/souffle_idees_book_1769376079792.png", date: "2026-03-15" },
-    { id: "ingenierie-demain", title: "L'Ingénierie du Demain", cat: "TECHNIQUE", desc: "Guide de référence sur les systèmes embarqués et le design hardware pour la nouvelle génération.", image: "bg-secondary/30", date: "2024-06-10" },
-    { id: "echos-futur", title: "Échos du Futur", cat: "LITTÉRATURE", desc: "Recueil d'essais sur la place de l'homme dans un monde orchestré par l'électronique.", image: "bg-orange-50", date: "2025-09-01" }
-];
-
-const categories = ["LITTÉRATURE", "TECHNIQUE", "LITTÉRATURE / ESSAI"];
+import { books, bookCategories } from "@/data/books";
 
 const sortOptions = [
     { label: "Plus récent", value: "newest" },
@@ -53,7 +47,7 @@ export default function BooksPage() {
             {/* Header */}
             <section className="pt-32 pb-20 px-6 md:px-12 text-center border-b border-border">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter">
+                    <h1 className="text-3xl md:text-5xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter">
                         La Collection <span className="text-primary italic font-normal">Éditoriale.</span>
                     </h1>
                     <p className="text-xl text-muted-foreground italic max-w-xl mx-auto border-y border-primary/10 py-8 leading-relaxed font-sans">
@@ -71,7 +65,7 @@ export default function BooksPage() {
                         onSearchChange={setSearchQuery}
                         selectedCategory={selectedCategory}
                         onCategoryChange={setSelectedCategory}
-                        categories={categories}
+                        categories={bookCategories}
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         sortOptions={sortOptions}

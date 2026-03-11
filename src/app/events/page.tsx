@@ -6,9 +6,7 @@ import { FilterSystem } from "@/components/ui/FilterSystem";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { EventCard } from "@/components/ui/EventCard";
 
-import { upcomingEvents } from "@/lib/data";
-
-const categories = ["CONFÉRENCE", "LITTÉRATURE", "WORKSHOP", "INNOVATION"];
+import { upcomingEvents, eventCategories } from "@/data/events";
 
 const sortOptions = [
     { label: "Plus proche (Date)", value: "newest" },
@@ -51,7 +49,7 @@ export default function EventsPage() {
             <section className="pt-32 pb-16 px-6 md:px-12 border-b border-border">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-10">
                     <div className="max-w-3xl">
-                        <h1 className="text-4xl md:text-6xl font-display font-bold leading-none mb-6 text-foreground tracking-tighter uppercase italic">
+                        <h1 className="text-3xl md:text-5xl font-display font-bold leading-none mb-6 text-foreground tracking-tighter uppercase italic">
                             Agenda & <span className="text-primary italic font-normal">Rencontres.</span>
                         </h1>
                         <p className="text-xl text-muted-foreground italic border-l-4 border-primary/20 pl-10 max-w-2xl leading-relaxed font-sans">
@@ -69,7 +67,7 @@ export default function EventsPage() {
                         onSearchChange={setSearchQuery}
                         selectedCategory={selectedCategory}
                         onCategoryChange={setSelectedCategory}
-                        categories={categories}
+                        categories={eventCategories}
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         sortOptions={sortOptions}

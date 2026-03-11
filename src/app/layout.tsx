@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Lora, Playfair_Display } from "next/font/google";
+import { Lora, Playfair_Display, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const lora = Lora({
   variable: "--font-lora",
@@ -25,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
         className={cn(
           lora.variable,
@@ -33,9 +37,13 @@ export default function RootLayout({
           "antialiased bg-background text-foreground min-h-screen font-sans"
         )}
       >
-        <SmoothScrollProvider>
-          {children}
-        </SmoothScrollProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <SmoothScrollProvider>
+              {children}
+            </SmoothScrollProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   );
