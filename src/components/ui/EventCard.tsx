@@ -137,12 +137,12 @@ export const EventCard = ({
                         {title}
                     </h3>
 
-                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2 italic">
+                    <p className="text-foreground/80 text-xs leading-relaxed line-clamp-2 italic">
                         "{desc}"
                     </p>
 
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-2 text-muted-foreground/60">
+                        <div className="flex items-center gap-2 text-foreground/70">
                             <MapPin size={12} className="text-primary" />
                             <span className="text-[9px] font-bold uppercase tracking-widest">{location}</span>
                         </div>
@@ -153,7 +153,7 @@ export const EventCard = ({
                                 <span className={isFull ? "text-red-500" : "text-primary/60"}>
                                     {isFull ? "COMPLET" : "INSCRIPTIONS OUVERTES"}
                                 </span>
-                                <span className="text-muted-foreground/40">{currentInscriptions} / {maxInscriptions} PLACES</span>
+                                <span className="text-foreground/60">{currentInscriptions} / {maxInscriptions} PLACES</span>
                             </div>
                             <div className="h-[2px] w-full bg-border overflow-hidden">
                                 <motion.div

@@ -1,9 +1,11 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FilterSystem } from "@/components/ui/FilterSystem";
 import { BookCard } from "@/components/ui/BookCard";
+import { X } from "lucide-react";
 
 import { books, bookCategories } from "@/data/books";
 
@@ -14,9 +16,33 @@ const sortOptions = [
 ];
 
 export default function BooksPage() {
+    return (
+        <Suspense fallback={null}>
+            <BooksPageContent />
+        </Suspense>
+    );
+}
+
+function BooksPageContent() {
+    const searchParams = useSearchParams();
+    const tagParam = searchParams.get("tag");
+
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("ALL");
+    const [selectedTag, setSelectedTag] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState("newest");
+
+    useEffect(() => {
+        if (tagParam) {
+            setSelectedTag(tagParam);
+        }
+    }, [tagParam]);
+
+    const allTags = useMemo(() => {
+        const tags = new Set<string>();
+        books.forEach((book) => book.tags?.forEach((t) => tags.add(t)));
+        return Array.from(tags).sort();
+    }, []);
 
     const filteredBooks = useMemo(() => {
         let result = books.filter((book) => {
@@ -26,7 +52,9 @@ export default function BooksPage() {
 
             const matchesCategory = selectedCategory === "ALL" || book.cat.toLowerCase().includes(selectedCategory.toLowerCase());
 
-            return matchesSearch && matchesCategory;
+            const matchesTag = !selectedTag || (book.tags || []).some((t) => t.toLowerCase() === selectedTag.toLowerCase());
+
+            return matchesSearch && matchesCategory && matchesTag;
         });
 
         // Sorting
@@ -38,7 +66,7 @@ export default function BooksPage() {
         });
 
         return result;
-    }, [searchQuery, selectedCategory, sortBy]);
+    }, [searchQuery, selectedCategory, selectedTag, sortBy]);
 
     return (
         <main className="flex flex-col min-h-screen bg-background">
@@ -50,7 +78,7 @@ export default function BooksPage() {
                     <h1 className="text-3xl md:text-5xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter">
                         La Collection <span className="text-primary italic font-normal">Éditoriale.</span>
                     </h1>
-                    <p className="text-xl text-muted-foreground italic max-w-xl mx-auto border-y border-primary/10 py-8 leading-relaxed font-sans">
+                    <p className="text-xl text-foreground/80 italic max-w-xl mx-auto border-y border-primary/10 py-8 leading-relaxed font-sans">
                         "Un voyage entre raison technique et émotion littéraire."
                         Découvrez les ouvrages de Mohamed Asikim TCHAHAYE.
                     </p>
@@ -58,7 +86,7 @@ export default function BooksPage() {
             </section>
 
             {/* Filter Section */}
-            <section className="py-12 bg-background border-b border-border">
+            <section className="py-8 bg-background border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <FilterSystem
                         searchQuery={searchQuery}
@@ -69,10 +97,41 @@ export default function BooksPage() {
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         sortOptions={sortOptions}
-                        placeholder="RECHERCHER UN LIVRE..."
+                        placeholder="Rechercher un livre, un auteur..."
+                        resultCount={filteredBooks.length}
                     />
                 </div>
             </section>
+
+            {/* Tag Filter Bar — scrollable horizontal */}
+            {(selectedTag || allTags.length > 0) && (
+                <section className="py-3 bg-background border-b border-border">
+                    <div className="max-w-7xl mx-auto px-6 md:px-12">
+                        <div className="flex items-center gap-3">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40 shrink-0">Tags</span>
+                            {selectedTag && (
+                                <button
+                                    onClick={() => setSelectedTag(null)}
+                                    className="flex items-center gap-1 shrink-0 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider bg-primary text-white border border-primary"
+                                >
+                                    {selectedTag} <X size={10} />
+                                </button>
+                            )}
+                            <div className="overflow-x-auto scrollbar-none flex items-center gap-2 -my-1 py-1">
+                                {allTags.filter((t) => t !== selectedTag).map((tag) => (
+                                    <button
+                                        key={tag}
+                                        onClick={() => setSelectedTag(tag)}
+                                        className="shrink-0 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider border border-border text-foreground/50 hover:border-primary hover:text-primary transition-colors whitespace-nowrap"
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Content List */}
             <section className="py-24 px-6 md:px-12 bg-[#faf9f6]">
@@ -89,15 +148,19 @@ export default function BooksPage() {
                                     category={book.cat}
                                     index={idx}
                                     image={book.image}
+                                    price={book.price}
+                                    currency={book.currency}
+                                    status={book.status}
+                                    amazonUrl={book.amazonUrl}
                                 />
                             ))}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-32 text-center">
                             <h3 className="text-3xl font-display font-bold italic mb-4">Aucun ouvrage trouvé.</h3>
-                            <p className="text-muted-foreground">Essayez d'ajuster vos filtres ou votre recherche.</p>
+                            <p className="text-foreground/70">Essayez d'ajuster vos filtres ou votre recherche.</p>
                             <button
-                                onClick={() => { setSearchQuery(""); setSelectedCategory("ALL"); }}
+                                onClick={() => { setSearchQuery(""); setSelectedCategory("ALL"); setSelectedTag(null); }}
                                 className="mt-8 text-[10px] font-bold uppercase tracking-widest text-primary underline underline-offset-8"
                             >
                                 Réinitialiser les filtres

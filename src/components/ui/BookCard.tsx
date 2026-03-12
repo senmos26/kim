@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShareButton } from "@/components/ui/ShareButton";
@@ -14,6 +14,10 @@ interface BookCardProps {
     category: string;
     image?: string;
     index: number;
+    price?: number | null;
+    currency?: string;
+    status?: "published" | "draft" | "coming_soon";
+    amazonUrl?: string | null;
 }
 
 export const BookCard = ({
@@ -23,7 +27,11 @@ export const BookCard = ({
     desc,
     category,
     image,
-    index
+    index,
+    price,
+    currency = "CAD",
+    status = "published",
+    amazonUrl,
 }: BookCardProps) => {
     return (
         <motion.div
@@ -48,7 +56,7 @@ export const BookCard = ({
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 lg:group-hover:scale-110"
                         />
                     ) : (
-                        <div className={cn("absolute inset-0 flex items-center justify-center", image || "bg-primary/5")}>
+                        <div className={cn("absolute inset-0 flex items-center justify-center bg-primary/5")}>
                             <span className="text-secondary-foreground/10 text-6xl font-display font-bold rotate-90 opacity-20">{title}</span>
                         </div>
                     )}
@@ -63,6 +71,15 @@ export const BookCard = ({
                         </span>
                     </div>
 
+                    {/* Status Badge */}
+                    {status === "coming_soon" && (
+                        <div className="absolute top-6 right-16 z-20">
+                            <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-white bg-primary px-3 py-1">
+                                Bientôt
+                            </span>
+                        </div>
+                    )}
+
                     {/* Content on Hover for Cover */}
                     <div className="absolute inset-0 flex flex-col justify-end p-10 translate-y-10 opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 transition-all duration-700 z-20">
                         <h4 className="text-xl font-display font-bold text-white mb-4 italic leading-tight">
@@ -71,12 +88,25 @@ export const BookCard = ({
                         <p className="text-white/70 text-sm leading-relaxed line-clamp-2 mb-8 italic">
                             {desc}
                         </p>
-                        <Link
-                            href={href}
-                            className="inline-flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-primary hover:text-white transition-colors"
-                        >
-                            LIRE DES EXTRAITS <ArrowRight size={14} />
-                        </Link>
+                        <div className="flex items-center gap-6">
+                            <Link
+                                href={href}
+                                className="inline-flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-primary hover:text-white transition-colors"
+                            >
+                                Découvrir <ArrowRight size={14} />
+                            </Link>
+                            {amazonUrl && (
+                                <a
+                                    href={amazonUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-white/60 hover:text-white transition-colors"
+                                >
+                                    <ShoppingCart size={12} /> Acheter
+                                </a>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -86,24 +116,39 @@ export const BookCard = ({
                 </div>
             </div>
 
-            {/* Static Info Below (Visible always for better UX on mobile/scroll) */}
+            {/* Static Info Below */}
             <div className="mt-8 flex flex-col gap-4">
                 <div className="space-y-2">
                     <h3 className="text-xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
                         {title}
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 lg:opacity-100 lg:group-hover:opacity-0 transition-opacity duration-300">
+                    <p className="text-foreground/80 text-sm leading-relaxed line-clamp-2 lg:opacity-100 lg:group-hover:opacity-0 transition-opacity duration-300">
                         {desc}
                     </p>
                 </div>
 
-                {/* Mobile-only action link */}
-                <Link
-                    href={href}
-                    className="lg:hidden inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-primary"
-                >
-                    LIRE DES EXTRAITS <ArrowRight size={14} />
-                </Link>
+                {/* Price + Status */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        {price ? (
+                            <span className="text-sm font-bold text-foreground">
+                                {price.toFixed(2)} <span className="text-[10px] text-foreground/60 font-normal">{currency}</span>
+                            </span>
+                        ) : status === "coming_soon" ? (
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                                À venir
+                            </span>
+                        ) : null}
+                    </div>
+
+                    {/* Mobile-only action link */}
+                    <Link
+                        href={href}
+                        className="lg:hidden inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-primary"
+                    >
+                        Voir <ArrowRight size={14} />
+                    </Link>
+                </div>
             </div>
 
             {/* Decorative arrow reveal */}

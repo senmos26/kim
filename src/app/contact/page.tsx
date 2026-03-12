@@ -1,25 +1,52 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Mail, Send, Linkedin, MessageSquare, Sparkles } from "lucide-react";
+import { Mail, Linkedin, ArrowRight, ChevronDown, MapPin } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+const subjects = [
+    "Littérature & Collaboration Éditoriale",
+    "Expertise Ingénierie & Projets",
+    "Conférence & Événementiel",
+    "Autre sujet",
+];
+
+const sideLinks = [
+    {
+        icon: Mail,
+        href: "mailto:atcmohamed16@gmail.com",
+        label: "Email",
+    },
+    {
+        icon: MapPin,
+        href: "https://maps.google.com/?q=Calgary,+Alberta,+Canada",
+        label: "Localisation",
+    },
+    {
+        icon: Linkedin,
+        href: "https://www.linkedin.com/in/asikim-mohamed-tchahaye-605700131",
+        label: "LinkedIn",
+    },
+];
 
 function ContactForm() {
     const { user, isAuthenticated, openAuthModal } = useAuth();
     const searchParams = useSearchParams();
+    const [subjectOpen, setSubjectOpen] = useState(false);
+    const subjectRef = useRef<HTMLDivElement>(null);
+    const [isSent, setIsSent] = useState(false);
 
-    // Form states
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        subject: "Littérature & Collaboration Éditoriale",
+        subject: subjects[0],
         message: ""
     });
 
-    // Handle query params and auth auto-fill
     useEffect(() => {
         const subject = searchParams.get("subject");
         const message = searchParams.get("message");
@@ -33,48 +60,68 @@ function ContactForm() {
         }));
     }, [isAuthenticated, user, searchParams]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (subjectRef.current && !subjectRef.current.contains(e.target as Node)) {
+                setSubjectOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert("Merci pour votre message " + formData.name + " ! Mohamed reviendra vers vous sous peu.");
-        setFormData(prev => ({ ...prev, message: "" }));
+        setIsSent(true);
+        setTimeout(() => {
+            setIsSent(false);
+            setFormData(prev => ({ ...prev, message: "" }));
+        }, 3000);
     };
 
+    const inputClassName =
+        "w-full bg-transparent border-0 border-b border-border pb-3 text-base text-foreground placeholder:text-foreground/70 focus:outline-none focus:border-primary transition-colors";
+
     return (
-        <div className="lg:col-span-6">
+        <div className="mt-14 border border-border bg-white p-8 md:p-10 lg:p-12">
             {isAuthenticated && user ? (
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="mb-8 p-4 bg-primary/5 border border-primary/10 rounded-sm flex items-center justify-between"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-10 border-l-2 border-primary pl-4"
                 >
-                    <p className="text-[11px] font-medium text-foreground/80 uppercase tracking-wider">
-                        Connecté en tant que <span className="font-bold text-primary">{user.name}</span>. Profil lié .
+                    <p className="text-sm text-foreground/80">
+                        Connecté en tant que <span className="font-semibold text-foreground">{user.name}</span>.
                     </p>
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-[9px] font-bold text-white">{user.name[0].toUpperCase()}</span>
-                    </div>
                 </motion.div>
             ) : (
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="mb-8 p-4 bg-secondary/30 border border-border rounded-sm flex items-center justify-between"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-10 border-l-2 border-primary pl-4"
                 >
-                    <p className="text-[11px] font-medium text-foreground/60 uppercase tracking-wider italic">
-                        Une question personnalisée ? <button onClick={() => openAuthModal("Connectez-vous pour pré-remplir vos informations de contact.")} className="text-primary hover:underline font-bold transition-all">S'authentifier</button> pour pré-remplir ce formulaire .
+                    <p className="text-sm text-foreground/80">
+                        <button
+                            type="button"
+                            onClick={() => openAuthModal("Connectez-vous pour pré-remplir vos informations de contact.")}
+                            className="font-semibold text-primary hover:underline"
+                        >
+                            Se connecter
+                        </button>{" "}
+                        pour pré-remplir vos informations.
                     </p>
                 </motion.div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
-                        <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/60">Nom Complet</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground">Votre nom</label>
                         <input
                             type="text"
                             name="name"
@@ -82,12 +129,13 @@ function ContactForm() {
                             value={formData.name}
                             onChange={handleChange}
                             required
-                            className="w-full bg-transparent border-b border-border py-4 focus:outline-none focus:border-primary transition-colors italic text-sm"
-                            placeholder="Jean-Luc Godard"
+                            className={inputClassName}
+                            placeholder="John Doe"
                         />
                     </div>
-                    <div className="space-y-4">
-                        <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/60">Adresse E-mail</label>
+
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground">Adresse e-mail</label>
                         <input
                             type="email"
                             name="email"
@@ -95,51 +143,103 @@ function ContactForm() {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="w-full bg-transparent border-b border-border py-4 focus:outline-none focus:border-primary transition-colors italic text-sm"
-                            placeholder="jean@exemple.com"
+                            className={inputClassName}
+                            placeholder="email@exemple.com"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/60">Objet de la demande</label>
-                    <div className="relative">
-                        <select
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            className="w-full bg-transparent border-b border-border py-4 focus:outline-none focus:border-primary transition-colors italic appearance-none cursor-pointer text-sm"
+                <div className="space-y-3">
+                    <label className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground">Objet</label>
+                    <div ref={subjectRef} className="relative">
+                        <button
+                            type="button"
+                            onClick={() => setSubjectOpen(!subjectOpen)}
+                            className={cn(
+                                "flex w-full items-center justify-between border-0 border-b pb-3 text-left text-base text-foreground transition-colors",
+                                subjectOpen ? "border-primary" : "border-border hover:border-primary/70"
+                            )}
                         >
-                            <option>Littérature & Collaboration Éditoriale</option>
-                            <option>Expertise Ingénierie & Projets</option>
-                            <option>Conférence & Événementiel</option>
-                            <option>Autre sujet</option>
-                        </select>
-                        <div className="absolute right-0 bottom-4 pointer-events-none text-muted-foreground/40">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                        </div>
+                            <span className="truncate">{formData.subject}</span>
+                            <ChevronDown
+                                size={16}
+                                className={cn("shrink-0 text-foreground/80 transition-transform duration-200", subjectOpen && "rotate-180")}
+                            />
+                        </button>
+
+                        <AnimatePresence>
+                            {subjectOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 8 }}
+                                    transition={{ duration: 0.16 }}
+                                    className="absolute left-0 right-0 top-full z-30 mt-2 border border-border bg-white shadow-xl"
+                                >
+                                    {subjects.map((s) => (
+                                        <button
+                                            key={s}
+                                            type="button"
+                                            onClick={() => {
+                                                setFormData((prev) => ({ ...prev, subject: s }));
+                                                setSubjectOpen(false);
+                                            }}
+                                            className={cn(
+                                                "w-full px-4 py-3 text-left text-sm transition-colors",
+                                                formData.subject === s
+                                                    ? "bg-primary/10 font-semibold text-primary"
+                                                    : "text-foreground hover:bg-secondary/40"
+                                            )}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/60">Votre Message</label>
+                <div className="space-y-3">
+                    <label className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground">Parlez-nous de votre projet</label>
                     <textarea
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
                         required
-                        rows={6}
-                        className="w-full bg-transparent border-b border-border py-4 focus:outline-none focus:border-primary transition-colors italic resize-none text-sm leading-relaxed"
-                        placeholder="Décrivez votre projet ou votre question..."
-                    ></textarea>
+                        rows={4}
+                        className={`${inputClassName} resize-none`}
+                        placeholder="Comment pouvons-nous vous aider ?"
+                    />
                 </div>
 
-                <button
-                    type="submit"
-                    className="bg-primary text-white w-full md:w-fit px-16 py-6 rounded-sm text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-primary/90 transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 group"
-                >
-                    Envoyer le message <Send size={14} className="group-hover:translate-x-2 transition-transform" />
-                </button>
+                <div className="pt-6">
+                    <AnimatePresence mode="wait">
+                        {isSent ? (
+                            <motion.p
+                                key="success"
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 6 }}
+                                className="border-l-2 border-primary pl-4 text-sm font-medium text-foreground"
+                            >
+                                Message envoyé avec succès. Nous revenons vers vous rapidement.
+                            </motion.p>
+                        ) : (
+                            <motion.button
+                                key="submit"
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 6 }}
+                                type="submit"
+                                className="inline-flex items-center gap-3 bg-primary px-8 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-white transition-colors hover:bg-foreground"
+                            >
+                                Envoyer le message
+                                <ArrowRight size={14} />
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
+                </div>
             </form>
         </div>
     );
@@ -150,71 +250,64 @@ export default function ContactPage() {
         <main className="flex flex-col min-h-screen bg-background selection:bg-primary selection:text-white">
             <Navbar />
 
-            <section className="pt-48 pb-32 px-6 md:px-12 border-b border-border relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -z-10 skew-x-12 translate-x-1/2" />
-
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
-                    <div className="lg:col-span-12 lg:mb-12">
-                        <div className="space-y-6">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full"
+            <section className="px-4 pb-24 pt-32 md:px-8 lg:pl-[120px]">
+                <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[88px] bg-primary text-white lg:flex lg:flex-col lg:items-center lg:py-8">
+                    <div className="mt-28 flex items-center gap-6 lg:flex-col">
+                        {sideLinks.map((item) => (
+                            <a
+                                key={item.label}
+                                href={item.href}
+                                target={item.href.startsWith("mailto") ? undefined : "_blank"}
+                                rel="noopener noreferrer"
+                                aria-label={item.label}
+                                className="text-white/85 transition-colors hover:text-foreground"
                             >
-                                <Sparkles size={12} className="text-primary" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Disponible pour collaboration</span>
-                            </motion.div>
-                            <h1 className="text-3xl md:text-5xl font-display font-bold leading-none">
-                                Entrons en <span className="text-primary italic font-normal">Contact.</span>
-                            </h1>
-                        </div>
+                                <item.icon size={17} />
+                            </a>
+                        ))}
                     </div>
 
-                    <div className="lg:col-span-5 space-y-12">
-                        <p className="text-lg text-muted-foreground italic leading-relaxed max-w-sm">
-                            "Toute grande collaboration commence par un premier mot, une première idée partagée."
-                        </p>
+                    <p className="mb-6 mt-auto text-[10px] uppercase tracking-[0.24em] text-white/70 [writing-mode:vertical-rl]">
+                        © 2026 KIMM CORP
+                    </p>
+                </aside>
 
-                        <div className="space-y-10 pt-8">
-                            <div className="flex items-center gap-8 group">
-                                <div className="p-4 bg-primary text-white rounded-sm shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
-                                    <Mail size={24} />
-                                </div>
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">E-mail Professionnel</span>
-                                    <a href="mailto:atcmohamed16@gmail.com" className="block text-lg font-bold hover:text-primary transition-colors">atcmohamed16@gmail.com</a>
-                                </div>
+                <div className="mx-auto max-w-7xl border border-primary/20 bg-white">
+                    <div className="bg-background px-8 py-10 md:px-14 md:py-14 lg:px-16 lg:py-16">
+                            <div className="grid grid-cols-1 gap-10 xl:grid-cols-[1.1fr_0.9fr] xl:gap-14">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.35 }}
+                                >
+                                    <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-primary">Entrons en contact</p>
+                                    <h1 className="font-display text-5xl font-bold leading-[0.9] tracking-tight md:text-7xl">
+                                        Contact<span className="text-primary">.</span>
+                                    </h1>
+                                    <p className="mt-8 max-w-2xl text-xl leading-relaxed text-foreground/80 md:text-[2rem]">
+                                        Nous sommes prêts à collaborer sur votre prochaine vision. Écrivez-nous pour discuter de la
+                                        façon dont KIMM CORP peut donner vie à vos idées.
+                                    </p>
+                                </motion.div>
+
+                                <motion.blockquote
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.08, duration: 0.35 }}
+                                    className="border-l border-border pl-8 text-xl italic leading-relaxed text-foreground/80 xl:mt-16"
+                                >
+                                    &ldquo;L&apos;excellence n&apos;est pas un acte, mais une habitude. Nous construisons cette habitude dans
+                                    chaque relation client.&rdquo;
+                                    <footer className="mt-6 text-xs not-italic font-semibold uppercase tracking-[0.2em] text-primary">
+                                        — Équipe dirigeante KIMM
+                                    </footer>
+                                </motion.blockquote>
                             </div>
 
-                            <div className="flex items-center gap-8 group">
-                                <div className="p-4 bg-secondary border border-border text-foreground rounded-sm group-hover:scale-110 transition-transform duration-500">
-                                    <Linkedin size={24} />
-                                </div>
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Réseau Professionnel</span>
-                                    <a href="https://www.linkedin.com/in/asikim-mohamed-tchahaye-605700131" target="_blank" rel="noopener noreferrer" className="block text-lg font-bold hover:text-primary transition-colors">linkedin.com/in/asikim-mohamed...</a>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-8 group">
-                                <div className="p-4 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 rounded-sm group-hover:scale-110 transition-transform duration-500">
-                                    <MessageSquare size={24} />
-                                </div>
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Urgence & WhatsApp</span>
-                                    <a href="https://wa.me/14034010528" target="_blank" rel="noopener noreferrer" className="block text-lg font-bold hover:text-primary transition-colors">+1 403 401 0528</a>
-                                </div>
-                            </div>
-                        </div>
+                            <Suspense fallback={<div className="mt-14 h-[520px] animate-pulse border border-border bg-secondary/20" />}>
+                                <ContactForm />
+                            </Suspense>
                     </div>
-
-                    <div className="lg:col-span-1 hidden lg:flex justify-center">
-                        <div className="w-px h-full bg-border" />
-                    </div>
-
-                    <Suspense fallback={<div className="lg:col-span-6 animate-pulse bg-secondary/20 h-[600px]" />}>
-                        <ContactForm />
-                    </Suspense>
                 </div>
             </section>
 

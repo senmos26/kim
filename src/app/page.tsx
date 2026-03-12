@@ -82,6 +82,10 @@ export default function Home() {
                 category={book.cat}
                 index={idx}
                 image={book.image}
+                price={book.price}
+                currency={book.currency}
+                status={book.status}
+                amazonUrl={book.amazonUrl}
               />
             ))}
           </div>
@@ -127,7 +131,7 @@ export default function Home() {
       <section className="py-32 px-6 md:px-12 bg-background border-b border-border">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 gap-8">
-            <h3 className="text-3xl md:text-4xl font-display font-bold">Réflexions <br /> <span className="text-muted-foreground italic font-normal">et Partages.</span></h3>
+            <h3 className="text-3xl md:text-4xl font-display font-bold">Réflexions <br /> <span className="text-foreground/60 italic font-normal">et Partages.</span></h3>
             <Link href="/blog" className="text-xs font-bold uppercase tracking-widest border-b-2 border-primary/20 pb-2 hover:border-primary transition-all">Consulter le blog</Link>
           </div>
 
@@ -142,6 +146,9 @@ export default function Home() {
                 category={art.category}
                 date={art.date}
                 image={art.image}
+                tags={art.tags}
+                likesCount={art.likes_count}
+                viewsCount={art.views_count}
                 index={idx}
               />
             ))}

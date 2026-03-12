@@ -60,7 +60,7 @@ export default function PortfolioPage() {
                         <h1 className="text-3xl md:text-5xl font-display font-bold leading-none mb-8 text-foreground tracking-tighter uppercase italic">
                             Ingénierie & <span className="text-primary italic font-normal">Savoir-faire.</span>
                         </h1>
-                        <p className="text-lg text-muted-foreground italic border-l-4 border-primary/20 pl-8 leading-relaxed font-sans max-w-xl">
+                        <p className="text-lg text-foreground/80 italic border-l-4 border-primary/20 pl-8 leading-relaxed font-sans max-w-xl">
                             "L'élégance de la précision." Explorez nos projets critiques, de l'architecture hardware au déploiement système.
                         </p>
                     </div>
@@ -68,7 +68,7 @@ export default function PortfolioPage() {
             </section>
 
             {/* Filter Section */}
-            <section className="py-12 bg-background border-b border-border">
+            <section className="py-8 bg-background border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <FilterSystem
                         searchQuery={searchQuery}
@@ -79,7 +79,8 @@ export default function PortfolioPage() {
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         sortOptions={sortOptions}
-                        placeholder="RECHERCHER UN PROJET OU UNE TECH..."
+                        placeholder="Rechercher un projet, une technologie..."
+                        resultCount={filteredProjects.length}
                     />
                 </div>
             </section>
@@ -107,7 +108,7 @@ export default function PortfolioPage() {
                     ) : (
                         <div className="flex flex-col items-center justify-center py-32 text-center">
                             <h3 className="text-3xl font-display font-bold italic mb-4">Aucun projet trouvé.</h3>
-                            <p className="text-muted-foreground">Essayez d'ajuster vos filtres ou votre recherche.</p>
+                            <p className="text-foreground/70">Essayez d'ajuster vos filtres ou votre recherche.</p>
                             <button
                                 onClick={() => { setSearchQuery(""); setSelectedCategory("ALL"); }}
                                 className="mt-8 text-[10px] font-bold uppercase tracking-widest text-primary underline underline-offset-8"

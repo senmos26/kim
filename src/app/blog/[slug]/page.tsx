@@ -1,36 +1,30 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
     ArrowLeft,
+    ArrowRight,
     Clock,
     Share2,
     ThumbsUp,
     MessageCircle,
     Tag as TagIcon,
     ChevronRight,
+    Eye,
     Sparkles,
-    X,
-    Copy,
-    Check,
-    Twitter,
-    Linkedin,
-    Mail,
     Send,
-    LogOut
+    List
 } from "lucide-react";
 import Link from "next/link";
-import { ShareButton } from "@/components/ui/ShareButton";
+import { SharePopup } from "@/components/ui/SharePopup";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
-import { AuthModal } from "@/components/ui/AuthModal";
 
-import { articlesData } from "@/data/articles";
+import { articlesData, articles } from "@/data/articles";
 
-// Helper: Formatage de date
 function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString("fr-FR", {
         day: "2-digit",
@@ -39,20 +33,48 @@ function formatDate(dateStr: string) {
     });
 }
 
-// Helper: Calcul du temps de lecture (basé sur les blocs de texte)
-function computeReadingTime(content: any[]) {
-    const text = content.map(c => c.text).join(" ");
-    const words = text.trim().split(/\s+/).length;
-    const minutes = Math.max(3, Math.round(words / 200));
-    return `${minutes} min de lecture`;
+function timeAgo(dateStr: string) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return "Aujourd'hui";
+    if (days === 1) return "Hier";
+    if (days < 7) return `Il y a ${days} jours`;
+    if (days < 30) return `Il y a ${Math.floor(days / 7)} sem.`;
+    return formatDate(dateStr);
 }
 
-// Helper: Extraction des points clés (highlights)
-function extractHighlights(content: any[]) {
-    return content
-        .filter(c => c.type === 'p')
+function computeReadingTime(html: string) {
+    const text = html.replace(/<[^>]+>/g, " ");
+    const words = text.trim().split(/\s+/).length;
+    const minutes = Math.max(2, Math.round(words / 200));
+    return `${minutes} min`;
+}
+
+function extractTOC(html: string): { id: string; text: string; level: number }[] {
+    const regex = /<(h[23])[^>]*>(.*?)<\/\1>/gi;
+    const items: { id: string; text: string; level: number }[] = [];
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        const text = match[2].replace(/<[^>]+>/g, "");
+        const id = text.toLowerCase().replace(/[^a-zàâéèêëïîôùûüç0-9]+/gi, "-").replace(/^-|-$/g, "");
+        items.push({ id, text, level: match[1] === "h2" || match[1] === "H2" ? 2 : 3 });
+    }
+    return items;
+}
+
+function injectHeadingIds(html: string): string {
+    return html.replace(/<(h[23])([^>]*)>(.*?)<\/\1>/gi, (_, tag, attrs, content) => {
+        const text = content.replace(/<[^>]+>/g, "");
+        const id = text.toLowerCase().replace(/[^a-zàâéèêëïîôùûüç0-9]+/gi, "-").replace(/^-|-$/g, "");
+        return `<${tag}${attrs} id="${id}">${content}</${tag}>`;
+    });
+}
+
+function extractHighlights(html: string): string[] {
+    const pMatches = html.match(/<p[^>]*>(.*?)<\/p>/gi) || [];
+    return pMatches
         .slice(0, 3)
-        .map(c => c.text.split('.')[0] + '.');
+        .map(p => p.replace(/<[^>]+>/g, "").split(".")[0] + ".");
 }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -93,7 +115,7 @@ function toggleUserLike(slug: string, userId: string): boolean {
 export default function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
     const article = articlesData[slug] || articlesData["electronique-ecriture"];
-    const { user, logout, isAuthenticated, openAuthModal } = useAuth();
+    const { user, isAuthenticated, openAuthModal } = useAuth();
 
     const [commentText, setCommentText] = useState("");
     const [comments, setComments] = useState<Comment[]>([]);
@@ -101,9 +123,10 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
     const [likeCount, setLikeCount] = useState<number>(article.likes_count);
     const [showSharePopup, setShowSharePopup] = useState(false);
     const [commentLoading, setCommentLoading] = useState(false);
-    const [copied, setCopied] = useState(false);
+    const [readProgress, setReadProgress] = useState(0);
+    const [tocOpen, setTocOpen] = useState(false);
+    const articleRef = useRef<HTMLElement>(null);
 
-    // Initial load for comments and likes
     useEffect(() => {
         setComments(loadComments(slug));
         if (isAuthenticated && user) {
@@ -111,14 +134,27 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
         }
     }, [slug, isAuthenticated, user]);
 
-    // Scroll to top on slug change
     useEffect(() => { window.scrollTo(0, 0); }, [slug]);
 
+    // Reading progress
+    const handleScroll = useCallback(() => {
+        if (!articleRef.current) return;
+        const el = articleRef.current;
+        const rect = el.getBoundingClientRect();
+        const start = el.offsetTop;
+        const height = el.scrollHeight;
+        const scrolled = window.scrollY - start;
+        const progress = Math.min(100, Math.max(0, (scrolled / (height - window.innerHeight)) * 100));
+        setReadProgress(progress);
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
+
     const requireAuth = (reason: string, then: () => void) => {
-        if (!isAuthenticated) {
-            openAuthModal(reason);
-            return;
-        }
+        if (!isAuthenticated) { openAuthModal(reason); return; }
         then();
     };
 
@@ -151,86 +187,93 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
         });
     };
 
-    const highlights = useMemo(() => extractHighlights(article.content), [article]);
     const readingTime = useMemo(() => computeReadingTime(article.content), [article]);
-    const relatedArticles = Object.values(articlesData)
-        .filter(a => a.id !== article.id && a.category === article.category)
-        .slice(0, 2);
+    const toc = useMemo(() => extractTOC(article.content), [article]);
+    const processedContent = useMemo(() => injectHeadingIds(article.content), [article]);
+    const highlights = useMemo(() => extractHighlights(article.content), [article]);
 
-    const handleCopyLink = () => {
-        const url = typeof window !== "undefined" ? window.location.href : "";
-        navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+    const relatedArticles = useMemo(() =>
+        (article.related_articles || [])
+            .map((id: string) => articlesData[id])
+            .filter(Boolean)
+            .slice(0, 2),
+    [article]);
+
+    // Prev/next navigation
+    const currentIndex = articles.findIndex(a => a.id === article.id);
+    const prevArticle = currentIndex > 0 ? articles[currentIndex - 1] : null;
+    const nextArticle = currentIndex < articles.length - 1 ? articles[currentIndex + 1] : null;
 
     return (
         <main className="flex flex-col min-h-screen bg-background selection:bg-primary selection:text-white">
             <Navbar />
 
-            {/* Article Hero - Design Premium */}
-            <section className="relative pt-48 pb-20 px-6 md:px-12 bg-background overflow-hidden">
-                {/* Abstract Background Element */}
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary/30 -z-10 skew-x-12 translate-x-1/2" />
+            {/* Reading Progress Bar */}
+            <div className="fixed top-0 left-0 right-0 z-50 h-[3px] bg-transparent">
+                <div className="h-full bg-primary transition-all duration-150 ease-out" style={{ width: `${readProgress}%` }} />
+            </div>
 
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-end">
-                    <div className="lg:col-span-8 space-y-10">
-                        <Link href="/blog" className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-primary hover:-translate-x-2 transition-transform group">
-                            <ArrowLeft size={16} className="group-hover:text-primary transition-colors" /> Retour aux pensées
-                        </Link>
+            {/* Article Hero */}
+            <section className="relative pt-36 pb-12 px-6 md:px-12 bg-background overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-secondary/20 -z-10 skew-x-12 translate-x-1/3" />
 
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <span className="bg-primary/5 text-primary border border-primary/10 px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest">
-                                    {article.category}
-                                </span>
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
-                                    Publié le {formatDate(article.date)}
-                                </span>
-                            </div>
+                <div className="max-w-6xl mx-auto">
+                    <Link href="/blog" className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-primary hover:-translate-x-2 transition-transform mb-8">
+                        <ArrowLeft size={14} /> Retour aux articles
+                    </Link>
 
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[0.95] text-foreground tracking-tighter italic">
-                                {article.title}.
-                            </h1>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-border">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-secondary border border-border overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-500">
-                                    <Image src="/assets/images/portrait_asikim_tchahaye_hero_1769376510862.png" alt={article.author_name} fill className="object-cover" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{article.author_name}</span>
-                                    <span className="text-[9px] font-medium text-muted-foreground/60 uppercase tracking-wider">Auteur & Ingénieur</span>
-                                </div>
-                            </div>
-
-                            <div className="h-4 w-px bg-border hidden md:block" />
-
-                            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-                                <span className="flex items-center gap-2"><Clock size={14} className="text-primary" /> {readingTime}</span>
-                                <span className="flex items-center gap-2"><MessageCircle size={14} className="text-primary" /> {article.comments_count} Commentaires</span>
-                            </div>
-                        </div>
+                    <div className="flex items-center gap-3 flex-wrap mb-5">
+                        <span className="bg-primary/5 text-primary border border-primary/10 px-3 py-1 text-[9px] font-bold uppercase tracking-widest">
+                            {article.category}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">
+                            {timeAgo(article.date)}
+                        </span>
+                        {article.updated_at && article.updated_at !== article.date && (
+                            <span className="text-[8px] text-foreground/30 uppercase tracking-wider">
+                                · Mis à jour le {formatDate(article.updated_at)}
+                            </span>
+                        )}
                     </div>
 
-                    <div className="lg:col-span-4 hidden lg:flex justify-end">
-                        <div className="flex flex-col items-center gap-4">
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-none text-foreground tracking-tight italic mb-6">
+                        {article.title}.
+                    </h1>
+
+                    <div className="flex flex-wrap items-center gap-6 pb-6 border-b border-border">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-secondary border border-border overflow-hidden relative">
+                                <Image src={article.author_avatar} alt={article.author_name} fill className="object-cover" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{article.author_name}</span>
+                                <span className="text-[8px] text-foreground/40 uppercase tracking-wider">Auteur & Ingénieur</span>
+                            </div>
+                        </div>
+
+                        <div className="h-4 w-px bg-border hidden md:block" />
+
+                        <div className="flex items-center gap-5 text-[9px] font-bold uppercase tracking-widest text-foreground/40">
+                            <span className="flex items-center gap-1.5"><Clock size={12} className="text-primary" /> {readingTime}</span>
+                            <span className="flex items-center gap-1.5"><Eye size={12} className="text-primary" /> {article.views_count.toLocaleString()}</span>
+                            <span className="flex items-center gap-1.5"><MessageCircle size={12} className="text-primary" /> {comments.length + article.comments_count}</span>
+                        </div>
+
+                        <div className="ml-auto flex items-center gap-3">
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-16 h-16 rounded-full flex flex-col items-center justify-center gap-1 border transition-all duration-500",
-                                    liked ? "bg-primary border-primary text-white shadow-xl shadow-primary/30" : "bg-background border-border text-foreground hover:border-primary/30"
+                                    "flex items-center gap-2 px-4 py-2 border text-[9px] font-bold uppercase tracking-wider transition-all",
+                                    liked ? "bg-primary border-primary text-white" : "border-border text-foreground hover:border-primary"
                                 )}
                             >
-                                <ThumbsUp size={20} className={liked ? "fill-white" : ""} />
-                                <span className="text-[8px] font-bold">{likeCount}</span>
+                                <ThumbsUp size={13} className={liked ? "fill-white" : ""} /> {likeCount}
                             </button>
                             <button
                                 onClick={() => setShowSharePopup(true)}
-                                className="w-16 h-16 rounded-full bg-background border border-border flex items-center justify-center text-foreground hover:border-primary transition-all duration-500"
+                                className="flex items-center gap-2 px-4 py-2 border border-border text-[9px] font-bold uppercase tracking-wider text-foreground hover:border-primary transition-all"
                             >
-                                <Share2 size={20} />
+                                <Share2 size={13} />
                             </button>
                         </div>
                     </div>
@@ -238,168 +281,195 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
             </section>
 
             {/* Main Content Area */}
-            <section className="pb-32 px-6 md:px-12 bg-background">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
+            <section className="pb-16 px-6 md:px-12 bg-background">
+                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12 items-start">
 
-                    {/* Left Column: Narrative Content */}
-                    <div className="lg:col-span-8">
+                    {/* Left Column: Content */}
+                    <div>
                         {/* Featured Image */}
-                        <div className="relative aspect-[21/9] bg-secondary border border-border mb-20 overflow-hidden shadow-2xl group">
+                        <div className="relative aspect-video bg-secondary border border-border mb-10 overflow-hidden group">
                             <Image
                                 src={article.image}
                                 alt={article.title}
                                 fill
-                                className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+                                className="object-cover transition-transform duration-1000 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors duration-1000" />
+                            <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors duration-700" />
                         </div>
 
                         {/* Highlights Block */}
-                        <div className="bg-secondary/30 border-l-4 border-primary p-10 mb-16 space-y-6">
-                            <div className="flex items-center gap-3 text-primary">
-                                <Sparkles size={18} />
-                                <span className="text-[11px] font-bold uppercase tracking-[0.3em]">Points Saillants</span>
+                        <div className="bg-secondary/20 border-l-4 border-primary p-8 mb-10 space-y-4">
+                            <div className="flex items-center gap-2 text-primary">
+                                <Sparkles size={14} />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Points Saillants</span>
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {highlights.map((point, i) => (
-                                    <div key={i} className="flex gap-4 group">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0 group-hover:scale-150 transition-transform" />
-                                        <p className="text-foreground/80 leading-relaxed font-sans">{point}</p>
+                                    <div key={i} className="flex gap-3">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                                        <p className="text-foreground/70 text-sm leading-relaxed">{point}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Article Text Rendering */}
-                        <article className="prose prose-stone lg:prose-xl max-w-none font-sans text-muted-foreground leading-[2] space-y-10">
-                            <p className="text-2xl text-foreground font-display leading-relaxed italic mb-12">
-                                "{article.excerpt}"
-                            </p>
+                        {/* Mobile TOC toggle */}
+                        {toc.length > 0 && (
+                            <div className="lg:hidden mb-8">
+                                <button onClick={() => setTocOpen(!tocOpen)} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary mb-3">
+                                    <List size={14} /> Sommaire {tocOpen ? "▾" : "▸"}
+                                </button>
+                                {tocOpen && (
+                                    <nav className="bg-secondary/20 border border-border p-4 space-y-2">
+                                        {toc.map((item) => (
+                                            <a key={item.id} href={`#${item.id}`} onClick={() => setTocOpen(false)}
+                                               className={cn("block text-xs text-foreground/60 hover:text-primary transition-colors", item.level === 3 && "pl-4")}>
+                                                {item.text}
+                                            </a>
+                                        ))}
+                                    </nav>
+                                )}
+                            </div>
+                        )}
 
-                            {article.content.map((block: any, idx: number) => {
-                                if (block.type === 'p') return <p key={idx} className="mb-8">{block.text}</p>;
-                                if (block.type === 'h3') return <h3 key={idx} className="font-display font-bold text-2xl text-foreground italic mt-16 mb-6 tracking-tight">{block.text} .</h3>;
-                                if (block.type === 'blockquote') return (
-                                    <blockquote key={idx} className="border-l-4 border-primary pl-10 py-6 my-12 bg-secondary/30 italic text-xl md:text-2xl text-foreground serif leading-relaxed">
-                                        "{block.text}"
-                                    </blockquote>
-                                );
-                                return null;
-                            })}
+                        {/* Article Body — WYSIWYG HTML */}
+                        <article ref={articleRef} className="mb-10">
+                            <p className="text-lg text-foreground font-display leading-relaxed italic mb-8 pl-5 border-l-2 border-primary/20">
+                                &ldquo;{article.excerpt}&rdquo;
+                            </p>
+                            <div
+                                className="prose prose-sm md:prose-base max-w-none text-foreground/70 leading-relaxed
+                                    [&_p]:mb-5 [&_strong]:text-foreground [&_em]:text-foreground/80
+                                    [&_h2]:text-xl [&_h2]:font-display [&_h2]:font-bold [&_h2]:italic [&_h2]:text-foreground [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:tracking-tight
+                                    [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground [&_h3]:mt-8 [&_h3]:mb-3
+                                    [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:py-4 [&_blockquote]:my-8 [&_blockquote]:bg-secondary/20 [&_blockquote]:italic [&_blockquote]:text-foreground/80 [&_blockquote]:text-lg
+                                    [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                                    [&_a]:text-primary [&_a]:underline"
+                                dangerouslySetInnerHTML={{ __html: processedContent }}
+                            />
                         </article>
 
-                        {/* Tags */}
-                        <div className="mt-20 pt-10 border-t border-border flex flex-wrap gap-3">
+                        {/* Tags — clickable */}
+                        <div className="flex flex-wrap gap-2 pb-8 border-b border-border">
                             {article.tags.map((tag: string) => (
-                                <span key={tag} className="flex items-center gap-2 bg-secondary px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-colors cursor-default">
-                                    <TagIcon size={12} /> {tag}
-                                </span>
+                                <Link
+                                    key={tag}
+                                    href={`/blog?tag=${encodeURIComponent(tag)}`}
+                                    className="flex items-center gap-1.5 bg-secondary/60 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-foreground/50 hover:text-primary hover:bg-primary/5 transition-colors"
+                                >
+                                    <TagIcon size={10} /> {tag}
+                                </Link>
                             ))}
                         </div>
 
-                        {/* Mobile Interactions */}
-                        <div className="lg:hidden flex items-center gap-6 mt-16 pt-10 border-t border-border">
-                            <button
-                                onClick={handleLike}
-                                className={cn(
-                                    "flex items-center gap-3 px-6 py-3 border rounded-sm transition-all duration-300",
-                                    liked ? "bg-primary border-primary text-white" : "bg-transparent border-border text-foreground"
-                                )}
-                            >
-                                <ThumbsUp size={18} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">{likeCount} J'aime</span>
-                            </button>
-                            <button
-                                onClick={() => setShowSharePopup(true)}
-                                className="flex items-center gap-3 px-6 py-3 border border-border rounded-sm text-foreground"
-                            >
-                                <Share2 size={18} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Partager</span>
-                            </button>
+                        {/* Author Bio */}
+                        <div className="flex items-start gap-5 py-8 border-b border-border">
+                            <div className="w-14 h-14 rounded-full bg-secondary border border-border overflow-hidden relative shrink-0">
+                                <Image src={article.author_avatar} alt={article.author_name} fill className="object-cover" />
+                            </div>
+                            <div>
+                                <Link href="/about" className="text-sm font-bold text-foreground hover:text-primary transition-colors">{article.author_name}</Link>
+                                <p className="text-xs text-foreground/50 leading-relaxed mt-1">{article.author_bio}</p>
+                            </div>
+                        </div>
+
+                        {/* Prev / Next Navigation */}
+                        <div className="grid grid-cols-2 gap-6 py-8">
+                            {prevArticle ? (
+                                <Link href={`/blog/${prevArticle.id}`} className="group flex flex-col gap-1 p-4 hover:bg-secondary/20 transition-colors -m-4 rounded">
+                                    <span className="text-[8px] font-bold uppercase tracking-widest text-foreground/30 flex items-center gap-1"><ArrowLeft size={10} /> Précédent</span>
+                                    <span className="text-sm font-display font-bold italic text-foreground group-hover:text-primary transition-colors line-clamp-1">{prevArticle.title}</span>
+                                </Link>
+                            ) : <div />}
+                            {nextArticle ? (
+                                <Link href={`/blog/${nextArticle.id}`} className="group flex flex-col gap-1 items-end text-right p-4 hover:bg-secondary/20 transition-colors -m-4 rounded">
+                                    <span className="text-[8px] font-bold uppercase tracking-widest text-foreground/30 flex items-center gap-1">Suivant <ArrowRight size={10} /></span>
+                                    <span className="text-sm font-display font-bold italic text-foreground group-hover:text-primary transition-colors line-clamp-1">{nextArticle.title}</span>
+                                </Link>
+                            ) : <div />}
                         </div>
                     </div>
 
                     {/* Right Column: Sidebar */}
-                    <aside className="lg:col-span-4 space-y-16">
-                        {/* Fast Facts Card */}
-                        <div className="bg-secondary/20 border border-border p-10 sticky top-32">
-                            <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-foreground mb-8 border-b border-border pb-4">Faits Rapides</h4>
-                            <div className="space-y-6">
-                                <div className="space-y-1">
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Thématique</span>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{article.category}</p>
+                    <aside className="hidden lg:flex flex-col gap-8 sticky top-28">
+                        {/* Table of Contents */}
+                        {toc.length > 0 && (
+                            <nav className="bg-secondary/10 border border-border p-6">
+                                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground mb-4 pb-3 border-b border-border flex items-center gap-2">
+                                    <List size={12} className="text-primary" /> Sommaire
+                                </h4>
+                                <div className="space-y-2">
+                                    {toc.map((item) => (
+                                        <a
+                                            key={item.id}
+                                            href={`#${item.id}`}
+                                            className={cn(
+                                                "block text-xs text-foreground/50 hover:text-primary transition-colors leading-snug",
+                                                item.level === 3 && "pl-4 text-[11px]"
+                                            )}
+                                        >
+                                            {item.text}
+                                        </a>
+                                    ))}
                                 </div>
-                                <div className="space-y-1">
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Investissement Temps</span>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">{readingTime}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Dernière Mise à Jour</span>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">{formatDate(article.date)}</p>
-                                </div>
-                                <div className="pt-6">
-                                    <button
-                                        onClick={() => setShowSharePopup(true)}
-                                        className="w-full flex items-center justify-between group py-4 border-t border-border"
-                                    >
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-foreground">Soutenir & Partager</span>
-                                        <ChevronRight size={14} className="group-hover:translate-x-2 transition-all text-primary" />
-                                    </button>
-                                </div>
+                            </nav>
+                        )}
+
+                        {/* Quick Facts */}
+                        <div className="bg-secondary/10 border border-border p-6">
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground mb-4 pb-3 border-b border-border">Infos</h4>
+                            <div className="space-y-4 text-xs">
+                                <div className="flex justify-between"><span className="text-foreground/40">Lecture</span><span className="font-bold text-foreground">{readingTime}</span></div>
+                                <div className="flex justify-between"><span className="text-foreground/40">Vues</span><span className="font-bold text-foreground">{article.views_count.toLocaleString()}</span></div>
+                                <div className="flex justify-between"><span className="text-foreground/40">Publié</span><span className="font-bold text-foreground">{formatDate(article.date)}</span></div>
+                                {article.updated_at && (
+                                    <div className="flex justify-between"><span className="text-foreground/40">Modifié</span><span className="font-bold text-foreground">{formatDate(article.updated_at)}</span></div>
+                                )}
                             </div>
+                            <button
+                                onClick={() => setShowSharePopup(true)}
+                                className="w-full flex items-center justify-between mt-5 pt-4 border-t border-border group"
+                            >
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-foreground">Partager</span>
+                                <ChevronRight size={12} className="text-primary group-hover:translate-x-1 transition-transform" />
+                            </button>
                         </div>
 
-                        {/* Newsletter Card */}
-                        <div className="bg-primary p-12 text-white space-y-8 relative overflow-hidden group">
-                            <Sparkles className="absolute -top-6 -right-6 text-white/10 w-32 h-32 group-hover:rotate-12 transition-transform duration-1000" />
+                        {/* Newsletter */}
+                        <div className="bg-primary p-8 text-white relative overflow-hidden group">
+                            <Sparkles className="absolute -top-4 -right-4 text-white/10 w-24 h-24 group-hover:rotate-12 transition-transform duration-1000" />
                             <div className="relative z-10">
-                                <h4 className="text-3xl font-display font-bold leading-tight mb-4 italic">Vision & Tech .</h4>
-                                <p className="text-sm text-white/70 leading-relaxed font-light mb-8 italic">
-                                    Rejoignez plus de 5,000 lecteurs pour une veille prospective sur l'ingénierie et l'humanisme.
+                                <h4 className="text-xl font-display font-bold leading-tight mb-3 italic">Vision & Tech .</h4>
+                                <p className="text-[11px] text-white/60 leading-relaxed mb-5">
+                                    Rejoignez 5,000+ lecteurs. Veille ingénierie & humanisme.
                                 </p>
-                                <form className="space-y-4">
+                                <form className="space-y-3" onSubmit={e => e.preventDefault()}>
                                     <input
                                         type="email"
-                                        placeholder="VOTRE ADRESSE EMAIL"
-                                        className="w-full bg-white/10 border border-white/20 p-4 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-white transition-colors placeholder:text-white/30"
+                                        placeholder="VOTRE EMAIL"
+                                        className="w-full bg-white/10 border border-white/20 p-3 text-[9px] font-bold uppercase tracking-widest focus:outline-none focus:border-white transition-colors placeholder:text-white/30"
                                     />
-                                    <button className="w-full bg-white text-primary py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-white/90 transition-all shadow-xl shadow-black/10">
+                                    <button type="submit" className="w-full bg-white text-primary py-3 text-[9px] font-bold uppercase tracking-[0.3em] hover:bg-white/90 transition-all">
                                         S'abonner
                                     </button>
                                 </form>
                             </div>
                         </div>
 
-                        {/* Interaction Card - Contact Link */}
-                        <Link
-                            href={`/contact?subject=Littérature & Collaboration Éditoriale&message=Bonjour, j'ai lu votre article "${article.title}" et j'aimerais en discuter davantage...`}
-                            className="block p-10 bg-secondary/10 border border-primary/20 hover:border-primary transition-colors group"
-                        >
-                            <div className="flex items-center gap-3 mb-4">
-                                <MessageCircle size={16} className="text-primary" />
-                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground">Une question ?</span>
-                            </div>
-                            <h4 className="text-lg font-display font-bold italic mb-6 leading-tight">Envie d'approfondir le sujet avec l'auteur ?</h4>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-primary">Contacter Mohamed .</span>
-                                <ArrowLeft className="rotate-180 text-primary group-hover:translate-x-2 transition-transform" size={14} />
-                            </div>
-                        </Link>
-
                         {/* Related Articles */}
                         {relatedArticles.length > 0 && (
-                            <div className="space-y-8">
-                                <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-foreground">Pensées Connexes</h4>
-                                <div className="space-y-10">
-                                    {relatedArticles.map((rel) => (
-                                        <Link key={rel.id} href={`/blog/${rel.id}`} className="group block space-y-4">
-                                            <div className="relative aspect-video overflow-hidden border border-border">
-                                                <Image src={rel.image} alt={rel.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div>
+                                <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground mb-4">À lire aussi</h4>
+                                <div className="space-y-5">
+                                    {relatedArticles.map((rel: any) => (
+                                        <Link key={rel.id} href={`/blog/${rel.id}`} className="group flex gap-3 items-start">
+                                            <div className="relative w-16 shrink-0 aspect-video overflow-hidden border border-border">
+                                                <Image src={rel.image} alt={rel.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
                                             </div>
-                                            <div className="space-y-2">
-                                                <span className="text-[8px] font-bold uppercase tracking-widest text-primary">{rel.category}</span>
-                                                <h5 className="text-lg font-display font-bold italic group-hover:text-primary transition-colors leading-tight">
-                                                    {rel.title} .
+                                            <div className="min-w-0">
+                                                <span className="text-[7px] font-bold uppercase tracking-widest text-primary">{rel.category}</span>
+                                                <h5 className="text-xs font-display font-bold italic group-hover:text-primary transition-colors leading-tight line-clamp-2">
+                                                    {rel.title}
                                                 </h5>
                                             </div>
                                         </Link>
@@ -407,210 +477,107 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                                 </div>
                             </div>
                         )}
+
+                        {/* Contact CTA */}
+                        <Link
+                            href={`/contact?subject=Article: ${article.title}`}
+                            className="block p-6 bg-secondary/10 border border-primary/20 hover:border-primary transition-colors group"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <MessageCircle size={12} className="text-primary" />
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-foreground">Question ?</span>
+                            </div>
+                            <p className="text-xs font-display font-bold italic leading-tight">Discuter de ce sujet avec l'auteur.</p>
+                        </Link>
                     </aside>
                 </div>
             </section>
 
-            {/* Share Popup - Replication of Trouvaille features */}
-            <AnimatePresence>
-                {showSharePopup && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowSharePopup(false)}
-                            className="absolute inset-0 bg-background/80 backdrop-blur-md"
-                        />
+            {/* Share Popup */}
+            <SharePopup
+                isOpen={showSharePopup}
+                onClose={() => setShowSharePopup(false)}
+                title={article.title}
+            />
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-lg bg-background border border-border shadow-2xl p-10 md:p-14 overflow-hidden"
-                        >
-                            {/* Decorative border */}
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
-
-                            <button
-                                onClick={() => setShowSharePopup(false)}
-                                className="absolute top-8 right-8 text-muted-foreground hover:text-foreground transition-all"
-                            >
-                                <X size={24} />
-                            </button>
-
-                            <div className="space-y-10 text-center">
-                                <div className="space-y-3">
-                                    <h3 className="text-2xl font-display font-bold italic tracking-tight">Diffuser l'idée .</h3>
-                                    <p className="text-sm text-muted-foreground">Partagez cette vision avec votre réseau.</p>
-                                </div>
-
-                                {/* QR Code Display */}
-                                <div className="flex justify-center">
-                                    <div className="bg-white p-4 border border-border shadow-sm rounded-sm">
-                                        <Image
-                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
-                                            alt="QR Code Partage"
-                                            width={180}
-                                            height={180}
-                                            className="w-40 h-40"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Social Actions */}
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                    {[
-                                        { icon: Twitter, label: "Twitter", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}` },
-                                        { icon: Linkedin, label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}` },
-                                        { icon: Mail, label: "Email", href: `mailto:?subject=${encodeURIComponent(article.title)}&body=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}` },
-                                        { icon: Copy, label: copied ? "Copié !" : "Copie", action: handleCopyLink }
-                                    ].map((social, i) => (
-                                        <div key={i} className="flex flex-col items-center gap-2">
-                                            {social.href ? (
-                                                <a
-                                                    href={social.href}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-all duration-300"
-                                                >
-                                                    <social.icon size={20} />
-                                                </a>
-                                            ) : (
-                                                <button
-                                                    onClick={social.action}
-                                                    className={cn(
-                                                        "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300",
-                                                        copied ? "bg-green-500 text-white" : "bg-secondary text-foreground hover:bg-primary hover:text-white"
-                                                    )}
-                                                >
-                                                    {copied ? <Check size={20} /> : <social.icon size={20} />}
-                                                </button>
-                                            )}
-                                            <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground/60">{social.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* ── COMMENT SECTION ── */}
-            <section className="pt-6 pb-12 px-6 md:px-12 bg-secondary/10 border-t border-border mt-10">
-                <div className="max-w-4xl mx-auto">
-
-                    {/* Header */}
+            {/* Comment Section */}
+            <section className="pt-8 pb-12 px-6 md:px-12 bg-secondary/10 border-t border-border">
+                <div className="max-w-3xl mx-auto">
                     <div className="flex items-center gap-3 mb-6">
-                        <MessageCircle size={16} className="text-primary" />
-                        <h2 className="text-base font-display font-bold italic">
-                            Commentaires
-                            <span className="ml-2 text-muted-foreground font-normal text-sm">
-                                ({comments.length})
-                            </span>
+                        <MessageCircle size={14} className="text-primary" />
+                        <h2 className="text-sm font-display font-bold italic">
+                            Commentaires <span className="text-foreground/40 font-normal">({comments.length})</span>
                         </h2>
                     </div>
 
-                    {/* Formulaire */}
                     <div className="mb-8 space-y-3">
                         {isAuthenticated && user && (
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0">
                                     <span className="text-[8px] font-bold text-white">{user.name[0].toUpperCase()}</span>
                                 </div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{user.name}</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-primary">{user.name}</span>
                             </div>
                         )}
-                        <div className="relative">
-                            <textarea
-                                value={commentText}
-                                onChange={e => setCommentText(e.target.value)}
-                                onFocus={() => !isAuthenticated && requireAuth("Connectez-vous pour laisser un commentaire.", () => { })}
-                                placeholder={isAuthenticated ? "Partagez votre réflexion sur cet article..." : "Connectez-vous pour commenter..."}
-                                rows={4}
-                                className="w-full bg-background border border-border p-6 text-sm font-sans focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-muted-foreground/40 leading-relaxed"
-                            />
-                        </div>
+                        <textarea
+                            value={commentText}
+                            onChange={e => setCommentText(e.target.value)}
+                            onFocus={() => !isAuthenticated && requireAuth("Connectez-vous pour commenter.", () => {})}
+                            placeholder={isAuthenticated ? "Partagez votre réflexion..." : "Connectez-vous pour commenter..."}
+                            rows={3}
+                            className="w-full bg-background border border-border p-5 text-sm focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-foreground/30 leading-relaxed"
+                        />
                         <div className="flex justify-end">
                             <button
                                 onClick={handleAddComment}
                                 disabled={commentLoading}
                                 className={cn(
-                                    "flex items-center gap-3 px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-300",
-                                    commentLoading
-                                        ? "bg-primary/50 text-white cursor-wait"
-                                        : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20"
+                                    "flex items-center gap-2 px-6 py-3 text-[9px] font-bold uppercase tracking-[0.3em] transition-all",
+                                    commentLoading ? "bg-primary/50 text-white cursor-wait" : "bg-primary text-white hover:bg-primary/90"
                                 )}
                             >
-                                {commentLoading ? "..." : <><Send size={13} /> Publier</>}
+                                {commentLoading ? "..." : <><Send size={11} /> Publier</>}
                             </button>
                         </div>
                     </div>
 
-                    {/* Liste des commentaires */}
-                    <div
-                        className={cn(
-                            "space-y-0 overflow-y-auto pr-1",
-                            comments.length > 4 ? "max-h-[520px]" : ""
-                        )}
-                        style={{ scrollbarWidth: "thin" }}
-                    >
+                    <div className={cn("space-y-0 overflow-y-auto", comments.length > 4 && "max-h-[480px]")} style={{ scrollbarWidth: "thin" }}>
                         <AnimatePresence initial={false}>
                             {comments.length === 0 ? (
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="text-center text-muted-foreground/40 text-sm italic py-10"
-                                >
-                                    Soyez le premier à commenter cet article.
+                                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-foreground/30 text-sm italic py-8">
+                                    Soyez le premier à commenter.
                                 </motion.p>
                             ) : (
-                                comments.map((c, i) => {
-                                    const initial = c.authorName[0].toUpperCase();
-                                    return (
-                                        <motion.div
-                                            key={c.id}
-                                            initial={{ opacity: 0, x: -12 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.04 }}
-                                            className="flex gap-4 py-5 border-b border-border last:border-0"
-                                        >
-                                            {/* Avatar */}
-                                            <div className="flex-shrink-0 pt-0.5">
-                                                <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                                                    <span className="text-[11px] font-bold text-primary">{initial}</span>
-                                                </div>
+                                comments.map((c, i) => (
+                                    <motion.div
+                                        key={c.id}
+                                        initial={{ opacity: 0, x: -12 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.04 }}
+                                        className="flex gap-3 py-4 border-b border-border last:border-0"
+                                    >
+                                        <div className="shrink-0 pt-0.5">
+                                            <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                                <span className="text-[10px] font-bold text-primary">{c.authorName[0].toUpperCase()}</span>
                                             </div>
-
-                                            {/* Content */}
-                                            <div className="flex-1 min-w-0 space-y-1.5">
-                                                <div className="flex items-baseline justify-between gap-4 flex-wrap">
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">
-                                                        {c.authorName}
-                                                    </span>
-                                                    <span className="text-[9px] font-medium text-muted-foreground/40 uppercase tracking-wider flex-shrink-0">
-                                                        {new Date(c.createdAt).toLocaleDateString("fr-FR", {
-                                                            day: "2-digit", month: "short", year: "numeric",
-                                                            hour: "2-digit", minute: "2-digit"
-                                                        })}
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm text-foreground/80 leading-relaxed font-sans">
-                                                    {c.text}
-                                                </p>
+                                        </div>
+                                        <div className="flex-1 min-w-0 space-y-1">
+                                            <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                                                <span className="text-[9px] font-bold uppercase tracking-widest text-foreground">{c.authorName}</span>
+                                                <span className="text-[8px] text-foreground/30 uppercase tracking-wider shrink-0">
+                                                    {new Date(c.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                                                </span>
                                             </div>
-                                        </motion.div>
-                                    );
-                                })
+                                            <p className="text-sm text-foreground/70 leading-relaxed">{c.text}</p>
+                                        </div>
+                                    </motion.div>
+                                ))
                             )}
                         </AnimatePresence>
                     </div>
                 </div>
             </section>
 
-
-            {/* Auth Modal */}
             <Footer />
         </main>
     );

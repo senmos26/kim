@@ -27,7 +27,7 @@ export default function AboutPage() {
                         <h1 className="text-3xl md:text-5xl font-display font-bold leading-none">
                             Mohamed Asikim <br /> <span className="text-primary italic font-normal text-[0.8em]">TCHAHAYE.</span>
                         </h1>
-                        <div className="space-y-8 text-xl text-muted-foreground leading-loose italic border-l-4 border-primary/20 pl-10">
+                        <div className="space-y-8 text-xl text-foreground/80 leading-loose italic border-l-4 border-primary/20 pl-10">
                             <p>"Je bâtis des systèmes avec la même précision que je cisèle mes métaphores."</p>
                         </div>
                         <div className="space-y-8 text-[17px] leading-relaxed text-foreground/80 font-sans">
@@ -48,19 +48,19 @@ export default function AboutPage() {
             <section className="py-32 px-6 md:px-12 bg-secondary/10">
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12">
                     <div className="text-center md:text-left space-y-2">
-                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Expérience Core</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Expérience Core</h4>
                         <p className="text-4xl font-display font-bold">5+ Années</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
-                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Expertise Technique</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Expertise Technique</h4>
                         <p className="text-4xl font-display font-bold">Électrique/Design</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
-                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Innovation</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Innovation</h4>
                         <p className="text-4xl font-display font-bold">Canada/Maroc</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
-                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Interventions</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Interventions</h4>
                         <p className="text-4xl font-display font-bold">Auteur/Ingénieur</p>
                     </div>
                 </div>

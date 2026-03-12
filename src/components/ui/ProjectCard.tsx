@@ -83,14 +83,14 @@ export const ProjectCard = ({
                     <h3 className="text-xl md:text-2xl font-display font-bold mb-6 italic group-hover:text-primary transition-colors">
                         {title}
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                    <p className="text-foreground/80 text-sm leading-relaxed mb-8">
                         {desc}
                     </p>
 
                     {/* Tech Tags */}
                     <div className="flex flex-wrap gap-3 mb-10">
                         {tech.map((t) => (
-                            <span key={t} className="text-[9px] font-bold uppercase tracking-widest px-3 py-1 bg-secondary text-muted-foreground border border-border group-hover:border-primary/20 transition-colors">
+                            <span key={t} className="text-[9px] font-bold uppercase tracking-widest px-3 py-1 bg-secondary text-foreground/70 border border-border group-hover:border-primary/20 transition-colors">
                                 {t}
                             </span>
                         ))}

@@ -104,7 +104,7 @@ export const ContentCard = ({
                     <h3 className="text-xl md:text-2xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
                         {title}
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 italic">
+                    <p className="text-foreground/80 text-sm leading-relaxed line-clamp-3 italic">
                         "{desc}"
                     </p>
                 </div>
