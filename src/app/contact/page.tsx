@@ -247,11 +247,11 @@ function ContactForm() {
 
 export default function ContactPage() {
     return (
-        <main className="flex flex-col min-h-screen bg-background selection:bg-primary selection:text-white">
+        <main className="flex flex-col min-h-screen bg-white selection:bg-primary selection:text-white">
             <Navbar />
 
             <section className="px-4 pb-24 pt-32 md:px-8 lg:pl-[120px]">
-                <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[88px] bg-primary text-white lg:flex lg:flex-col lg:items-center lg:py-8">
+                <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[88px] border-r border-border bg-white text-foreground lg:flex lg:flex-col lg:items-center lg:py-8">
                     <div className="mt-28 flex items-center gap-6 lg:flex-col">
                         {sideLinks.map((item) => (
                             <a
@@ -260,20 +260,20 @@ export default function ContactPage() {
                                 target={item.href.startsWith("mailto") ? undefined : "_blank"}
                                 rel="noopener noreferrer"
                                 aria-label={item.label}
-                                className="text-white/85 transition-colors hover:text-foreground"
+                                className="text-foreground/65 transition-colors hover:text-primary"
                             >
                                 <item.icon size={17} />
                             </a>
                         ))}
                     </div>
 
-                    <p className="mb-6 mt-auto text-[10px] uppercase tracking-[0.24em] text-white/70 [writing-mode:vertical-rl]">
+                    <p className="mb-6 mt-auto text-[10px] uppercase tracking-[0.24em] text-foreground/45 [writing-mode:vertical-rl]">
                         © 2026 KIMM CORP
                     </p>
                 </aside>
 
                 <div className="mx-auto max-w-7xl border border-primary/20 bg-white">
-                    <div className="bg-background px-8 py-10 md:px-14 md:py-14 lg:px-16 lg:py-16">
+                    <div className="bg-white px-8 py-10 md:px-14 md:py-14 lg:px-16 lg:py-16">
                             <div className="grid grid-cols-1 gap-10 xl:grid-cols-[1.1fr_0.9fr] xl:gap-14">
                                 <motion.div
                                     initial={{ opacity: 0, y: 12 }}
@@ -304,7 +304,7 @@ export default function ContactPage() {
                                 </motion.blockquote>
                             </div>
 
-                            <Suspense fallback={<div className="mt-14 h-[520px] animate-pulse border border-border bg-secondary/20" />}>
+                            <Suspense fallback={<div className="mt-14 h-[520px] animate-pulse border border-border bg-white" />}>
                                 <ContactForm />
                             </Suspense>
                     </div>

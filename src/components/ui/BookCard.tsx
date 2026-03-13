@@ -46,7 +46,7 @@ export const BookCard = ({
             className="group relative flex flex-col h-full overflow-visible"
         >
             {/* Cover Area - 3/4 Aspect Ratio for Books */}
-            <div className="relative aspect-[3/4] bg-secondary/20 border border-border/40 shadow-lg lg:group-hover:shadow-2xl transition-all duration-700">
+            <div className="relative aspect-3/4 bg-secondary/20 border border-border/40 shadow-lg lg:group-hover:shadow-2xl transition-all duration-700">
                 {/* Nested Image Wrapper with overflow-hidden */}
                 <div className="absolute inset-0 overflow-hidden">
                     {image && image.match(/^[/\\]|^[a-zA-Z]:|^http/) ? (
@@ -62,11 +62,11 @@ export const BookCard = ({
                     )}
 
                     {/* Premium Overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 lg:group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 lg:group-hover:opacity-100 transition-opacity duration-700" />
 
                     {/* Floating Category Label */}
                     <div className="absolute top-6 left-6 z-20">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-white/70 bg-black/20 backdrop-blur-sm px-3 py-1 border border-white/10">
+                        <span className="bg-black/20 px-3 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-sm border border-white/10">
                             {category}
                         </span>
                     </div>
@@ -74,7 +74,7 @@ export const BookCard = ({
                     {/* Status Badge */}
                     {status === "coming_soon" && (
                         <div className="absolute top-6 right-16 z-20">
-                            <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-white bg-primary px-3 py-1">
+                            <span className="bg-primary px-3 py-1.5 text-xs font-semibold text-white">
                                 Bientôt
                             </span>
                         </div>
@@ -91,9 +91,9 @@ export const BookCard = ({
                         <div className="flex items-center gap-6">
                             <Link
                                 href={href}
-                                className="inline-flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-primary hover:text-white transition-colors"
+                                className="inline-flex items-center gap-2.5 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary/90"
                             >
-                                Découvrir <ArrowRight size={14} />
+                                Voir l'ouvrage <ArrowRight size={14} />
                             </Link>
                             {amazonUrl && (
                                 <a
@@ -101,7 +101,7 @@ export const BookCard = ({
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-white/60 hover:text-white transition-colors"
+                                    className="inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
                                 >
                                     <ShoppingCart size={12} /> Acheter
                                 </a>
@@ -132,10 +132,10 @@ export const BookCard = ({
                     <div className="flex items-center gap-3">
                         {price ? (
                             <span className="text-sm font-bold text-foreground">
-                                {price.toFixed(2)} <span className="text-[10px] text-foreground/60 font-normal">{currency}</span>
+                                {price.toFixed(2)} <span className="text-xs text-foreground/60 font-normal">{currency}</span>
                             </span>
                         ) : status === "coming_soon" ? (
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                            <span className="text-sm font-semibold text-primary">
                                 À venir
                             </span>
                         ) : null}
@@ -144,9 +144,9 @@ export const BookCard = ({
                     {/* Mobile-only action link */}
                     <Link
                         href={href}
-                        className="lg:hidden inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-primary"
+                        className="lg:hidden inline-flex items-center gap-2.5 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-white"
                     >
-                        Voir <ArrowRight size={14} />
+                        Voir l'ouvrage <ArrowRight size={14} />
                     </Link>
                 </div>
             </div>

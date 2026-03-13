@@ -255,7 +255,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
                             </div>
 
                             {/* Quote */}
-                            <div className="bg-secondary/20 px-8 py-6 border border-border italic text-base text-foreground relative mb-8">
+                            <div className="bg-white px-8 py-6 border border-border italic text-base text-foreground relative mb-8">
                                 <span className="absolute -top-2 left-4 text-4xl text-primary/20 font-serif leading-none">&ldquo;</span>
                                 <p className="pl-4">{book.quote}</p>
                                 <span className="absolute -bottom-2 right-4 text-4xl text-primary/20 font-serif leading-none rotate-180">&ldquo;</span>
@@ -270,7 +270,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                         {relatedBooks.map((rel: any) => (
-                                            <Link key={rel.id} href={`/books/${rel.id}`} className="group flex gap-4 items-start p-3 hover:bg-secondary/30 transition-colors -mx-3 rounded">
+                                            <Link key={rel.id} href={`/books/${rel.id}`} className="group flex gap-4 items-start p-3 hover:bg-white transition-colors -mx-3 rounded">
                                                 <div className="relative w-14 shrink-0 aspect-[3/4] overflow-hidden border border-border">
                                                     <img src={rel.image} alt={rel.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 </div>

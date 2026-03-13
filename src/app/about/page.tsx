@@ -3,13 +3,13 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function AboutPage() {
     return (
-        <main className="flex flex-col min-h-screen bg-background">
+        <main className="flex flex-col min-h-screen bg-white">
             <Navbar />
 
             <section className="pt-48 pb-32 px-6 md:px-12 border-b border-border">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
                     <div className="lg:col-span-5 relative">
-                        <div className="relative aspect-[3/4] bg-secondary border border-border overflow-hidden shadow-2xl">
+                        <div className="relative aspect-3/4 bg-white border border-border overflow-hidden shadow-2xl">
                             <img
                                 src="/assets/images/kim.jpg"
                                 alt="Mohamed Asikim TCHAHAYE - Portrait"
@@ -18,7 +18,7 @@ export default function AboutPage() {
                             {/* Subtle light overlay instead of placeholder */}
                             <div className="absolute inset-0 ring-1 ring-inset ring-black/5" />
                         </div>
-                        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/20 backdrop-blur-xl border border-primary/20 flex items-center justify-center p-8 text-center hidden md:flex">
+                        <div className="absolute -bottom-10 -right-10 hidden h-48 w-48 items-center justify-center border border-primary/20 bg-white p-8 text-center md:flex">
                             <span className="text-xs font-bold uppercase tracking-widest text-primary">Auteur & Ingénieur</span>
                         </div>
                     </div>
@@ -45,23 +45,23 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            <section className="py-32 px-6 md:px-12 bg-secondary/10">
+            <section className="py-32 px-6 md:px-12 bg-white">
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12">
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Expérience Core</h4>
-                        <p className="text-4xl font-display font-bold">5+ Années</p>
+                        <p className="text-2xl md:text-3xl font-display font-bold leading-tight">5+ Années</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Expertise Technique</h4>
-                        <p className="text-4xl font-display font-bold">Électrique/Design</p>
+                        <p className="text-2xl md:text-3xl font-display font-bold leading-tight">Électrique/Design</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Innovation</h4>
-                        <p className="text-4xl font-display font-bold">Canada/Maroc</p>
+                        <p className="text-2xl md:text-3xl font-display font-bold leading-tight">Canada/Maroc</p>
                     </div>
                     <div className="text-center md:text-left space-y-2">
                         <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/70">Interventions</h4>
-                        <p className="text-4xl font-display font-bold">Auteur/Ingénieur</p>
+                        <p className="text-2xl md:text-3xl font-display font-bold leading-tight">Auteur/Ingénieur</p>
                     </div>
                 </div>
             </section>

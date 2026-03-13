@@ -215,7 +215,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
 
             {/* Article Hero */}
             <section className="relative pt-36 pb-12 px-6 md:px-12 bg-background overflow-hidden">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-secondary/20 -z-10 skew-x-12 translate-x-1/3" />
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-white -z-10 skew-x-12 translate-x-1/3" />
 
                 <div className="max-w-6xl mx-auto">
                     <Link href="/blog" className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-primary hover:-translate-x-2 transition-transform mb-8">
@@ -287,7 +287,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                     {/* Left Column: Content */}
                     <div>
                         {/* Featured Image */}
-                        <div className="relative aspect-video bg-secondary border border-border mb-10 overflow-hidden group">
+                        <div className="relative aspect-video bg-white border border-border mb-10 overflow-hidden group">
                             <Image
                                 src={article.image}
                                 alt={article.title}
@@ -298,7 +298,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                         </div>
 
                         {/* Highlights Block */}
-                        <div className="bg-secondary/20 border-l-4 border-primary p-8 mb-10 space-y-4">
+                        <div className="bg-white border-l-4 border-primary p-8 mb-10 space-y-4">
                             <div className="flex items-center gap-2 text-primary">
                                 <Sparkles size={14} />
                                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Points Saillants</span>
@@ -320,7 +320,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                                     <List size={14} /> Sommaire {tocOpen ? "▾" : "▸"}
                                 </button>
                                 {tocOpen && (
-                                    <nav className="bg-secondary/20 border border-border p-4 space-y-2">
+                                    <nav className="bg-white border border-border p-4 space-y-2">
                                         {toc.map((item) => (
                                             <a key={item.id} href={`#${item.id}`} onClick={() => setTocOpen(false)}
                                                className={cn("block text-xs text-foreground/60 hover:text-primary transition-colors", item.level === 3 && "pl-4")}>
@@ -394,7 +394,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                     <aside className="hidden lg:flex flex-col gap-8 sticky top-28">
                         {/* Table of Contents */}
                         {toc.length > 0 && (
-                            <nav className="bg-secondary/10 border border-border p-6">
+                            <nav className="bg-white border border-border p-6">
                                 <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground mb-4 pb-3 border-b border-border flex items-center gap-2">
                                     <List size={12} className="text-primary" /> Sommaire
                                 </h4>
@@ -416,7 +416,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                         )}
 
                         {/* Quick Facts */}
-                        <div className="bg-secondary/10 border border-border p-6">
+                        <div className="bg-white border border-border p-6">
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground mb-4 pb-3 border-b border-border">Infos</h4>
                             <div className="space-y-4 text-xs">
                                 <div className="flex justify-between"><span className="text-foreground/40">Lecture</span><span className="font-bold text-foreground">{readingTime}</span></div>
@@ -481,7 +481,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
                         {/* Contact CTA */}
                         <Link
                             href={`/contact?subject=Article: ${article.title}`}
-                            className="block p-6 bg-secondary/10 border border-primary/20 hover:border-primary transition-colors group"
+                            className="block p-6 bg-white border border-primary/20 hover:border-primary transition-colors group"
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <MessageCircle size={12} className="text-primary" />
@@ -501,7 +501,7 @@ export default function BlogDetailPage({ params }: { params: Promise<{ slug: str
             />
 
             {/* Comment Section */}
-            <section className="pt-8 pb-12 px-6 md:px-12 bg-secondary/10 border-t border-border">
+            <section className="pt-8 pb-12 px-6 md:px-12 bg-white border-t border-border">
                 <div className="max-w-3xl mx-auto">
                     <div className="flex items-center gap-3 mb-6">
                         <MessageCircle size={14} className="text-primary" />

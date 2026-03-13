@@ -75,11 +75,11 @@ function BlogPageContent() {
     }, [searchQuery, selectedCategory, selectedTag, sortBy]);
 
     return (
-        <main className="flex flex-col min-h-screen bg-background">
+        <main className="flex flex-col min-h-screen bg-white">
             <Navbar />
 
             {/* Header */}
-            <section className="pt-32 pb-12 px-6 md:px-12 bg-background">
+            <section className="pt-32 pb-12 px-6 md:px-12 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="max-w-3xl mb-16">
                         <h1 className="text-3xl md:text-5xl font-display font-bold leading-[0.9] mb-8 text-foreground tracking-tighter">
@@ -110,7 +110,7 @@ function BlogPageContent() {
 
             {/* Tag Filter Bar — scrollable horizontal */}
             {(selectedTag || allTags.length > 0) && (
-                <section className="py-3 bg-background border-b border-border">
+                <section className="py-3 bg-white border-b border-border">
                     <div className="max-w-7xl mx-auto px-6 md:px-12">
                         <div className="flex items-center gap-3">
                             <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40 shrink-0">Tags</span>
@@ -139,7 +139,7 @@ function BlogPageContent() {
             )}
 
             {/* Content Grid */}
-            <section className="py-24 px-6 md:px-12 bg-[#faf9f6]">
+            <section className="py-24 px-6 md:px-12 bg-white">
                 <div className="max-w-7xl mx-auto min-h-[400px]">
                     {filteredArticles.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">

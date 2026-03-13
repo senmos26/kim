@@ -3,10 +3,8 @@ import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/sections/Hero";
-import { Book, Cpu, Calendar, ArrowRight, User, Clock, Tag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ContentCard } from "@/components/ui/ContentCard";
 import { BookCard } from "@/components/ui/BookCard";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { ArticleCard } from "@/components/ui/ArticleCard";
@@ -14,36 +12,44 @@ import { EventCard } from "@/components/ui/EventCard";
 import { upcomingEvents } from "@/data/events";
 import { books } from "@/data/books";
 import { articles } from "@/data/articles";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { portfolioProjects } from "@/data/portfolio";
 
 export default function Home() {
-  const { t } = useLanguage();
   return (
-    <main className="flex flex-col min-h-screen bg-background">
+    <main className="flex flex-col min-h-screen bg-white">
       <Navbar />
       <Hero />
 
       {/* 1. SECTION ÉVÉNEMENTS PROCHAINS (MOVED & LIMITED TO 2) */}
-      <section className="py-32 px-6 md:px-12 bg-secondary/10 border-b border-border">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-32 px-6 md:px-12 bg-white border-b border-border">
+        <div className="mx-auto max-w-[1380px]">
           <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 gap-8">
             <h3 className="text-3xl md:text-4xl font-display font-bold">Prochains <br /> <span className="text-primary italic font-normal">Rendez-vous.</span></h3>
             <Link href="/events" className="text-xs font-bold uppercase tracking-widest border-b-2 border-primary/20 pb-2 hover:border-primary transition-all">Tous les événements</Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
             {upcomingEvents.slice(0, 4).map((ev, idx) => (
               <EventCard
                 key={ev.id}
-                id={ev.id}
                 href={`/events/${ev.id}`}
                 title={ev.title}
+                subtitle={ev.subtitle}
                 desc={ev.desc}
                 category={ev.cat}
                 date={ev.date}
                 endDate={ev.endDate}
                 month={ev.month}
                 location={ev.location}
+                status={ev.status}
+                eventType={ev.eventType}
+                startTime={ev.startTime}
+                endTime={ev.endTime}
+                timezone={ev.timezone}
+                venueName={ev.venueName}
+                platform={ev.platform}
+                ctaLabel={ev.ctaLabel}
+                featured={ev.featured}
                 price={ev.price}
                 maxInscriptions={ev.maxInscriptions}
                 currentInscriptions={ev.currentInscriptions}
@@ -57,7 +63,7 @@ export default function Home() {
       </section>
 
       {/* 2. SECTION DERNIÈRES PARUTIONS (OUVRAGES) */}
-      <section className="py-32 px-6 md:px-12 bg-background border-b border-border">
+      <section className="py-32 px-6 md:px-12 bg-white border-b border-border">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
             <div className="max-w-2xl">
@@ -93,29 +99,33 @@ export default function Home() {
       </section>
 
       {/* 3. SECTION EXPERTISE TECHNIQUE (TECH/PORTFOLIO) */}
-      <section className="py-32 px-6 md:px-12 bg-secondary/30 border-b border-border">
+      <section className="py-32 px-6 md:px-12 bg-white border-b border-border">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
           <h3 className="text-3xl md:text-4xl font-display font-bold text-center leading-tight mb-20">
             L'innovation par la <br className="hidden md:block" />
             <span className="text-primary font-medium italic underline underline-offset-10">rigueur technique.</span>
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 w-full">
-            {[
-              { id: "smartgrid-v2", title: "SmartGrid v2", cat: "Systèmes Embarqués", desc: "Contrôleur intelligent pour réseaux électriques locaux haute performance.", tech: ["C", "PCB Design", "IoT"], image: "/assets/images/smartgrid_technology_1769376095858.png", icon: <Cpu /> },
-              { id: "iot-precision", title: "IoT Precision", cat: "Capteurs", desc: "Automate de mesure haute fidélité pour laboratoires de recherche scientifique.", tech: ["VHDL", "FPGA"], image: "bg-secondary/30", icon: <Cpu /> },
-              { id: "edge-analytics", title: "Edge Analytics", cat: "Intelligence Artificielle", desc: "Optimisation d'algorithmes de vision complexe sur architecture FPGA.", tech: ["Python", "C++"], image: "bg-orange-100/30", icon: <Cpu /> }
-            ].map((p, idx) => (
+          <div className="grid w-full max-w-6xl grid-cols-1 gap-10">
+            {portfolioProjects.slice(0, 3).map((p, idx) => (
               <ProjectCard
                 key={p.id}
-                id={p.id}
                 href={`/portfolio/${p.id}`}
                 title={p.title}
-                desc={p.desc}
-                category={p.cat}
+                subtitle={p.subtitle}
+                desc={p.excerpt}
+                category={p.category}
+                sector={p.sector}
+                clientName={p.clientName}
+                status={p.status}
+                featured={p.featured}
+                year={p.year}
+                duration={p.duration}
+                engagementType={p.engagementType}
+                metricHighlight={p.metricHighlight}
                 tech={p.tech}
-                image={p.image}
-                icon={p.icon}
+                tags={p.tags}
+                image={p.coverImage}
                 index={idx}
               />
             ))}

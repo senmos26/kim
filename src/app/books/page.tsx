@@ -69,7 +69,7 @@ function BooksPageContent() {
     }, [searchQuery, selectedCategory, selectedTag, sortBy]);
 
     return (
-        <main className="flex flex-col min-h-screen bg-background">
+        <main className="flex flex-col min-h-screen bg-white">
             <Navbar />
 
             {/* Header */}
@@ -86,7 +86,7 @@ function BooksPageContent() {
             </section>
 
             {/* Filter Section */}
-            <section className="py-8 bg-background border-b border-border">
+            <section className="py-8 bg-white border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <FilterSystem
                         searchQuery={searchQuery}
@@ -105,7 +105,7 @@ function BooksPageContent() {
 
             {/* Tag Filter Bar — scrollable horizontal */}
             {(selectedTag || allTags.length > 0) && (
-                <section className="py-3 bg-background border-b border-border">
+                <section className="py-3 bg-white border-b border-border">
                     <div className="max-w-7xl mx-auto px-6 md:px-12">
                         <div className="flex items-center gap-3">
                             <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40 shrink-0">Tags</span>
@@ -134,7 +134,7 @@ function BooksPageContent() {
             )}
 
             {/* Content List */}
-            <section className="py-24 px-6 md:px-12 bg-[#faf9f6]">
+            <section className="py-24 px-6 md:px-12 bg-white">
                 <div className="max-w-7xl mx-auto min-h-[400px]">
                     {filteredBooks.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24">
