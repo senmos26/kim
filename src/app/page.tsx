@@ -106,8 +106,8 @@ export default function Home() {
             <span className="text-primary font-medium italic underline underline-offset-10">rigueur technique.</span>
           </h3>
 
-          <div className="grid w-full max-w-6xl grid-cols-1 gap-10">
-            {portfolioProjects.slice(0, 3).map((p, idx) => (
+          <div className="grid w-full max-w-7xl grid-cols-1 gap-8 md:grid-cols-2">
+            {portfolioProjects.slice(0, 4).map((p, idx) => (
               <ProjectCard
                 key={p.id}
                 href={`/portfolio/${p.id}`}

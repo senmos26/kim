@@ -118,29 +118,30 @@ export const BookCard = ({
 
             {/* Static Info Below */}
             <div className="mt-8 flex flex-col gap-4">
-                <div className="space-y-2">
+                <div className="space-y-3">
                     <h3 className="text-xl font-display font-bold leading-tight lg:group-hover:text-primary transition-colors italic">
                         {title}
                     </h3>
+                    {(price || status === "coming_soon") && (
+                        <div>
+                            {price ? (
+                                <div className="inline-flex items-end gap-2 border border-primary/15 bg-primary/5 px-3.5 py-2">
+                                    <span className="text-xl font-bold leading-none text-primary">{price.toFixed(2)}</span>
+                                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/60">{currency}</span>
+                                </div>
+                            ) : (
+                                <div className="inline-flex items-center border border-primary/15 bg-primary/5 px-3.5 py-2 text-sm font-semibold text-primary">
+                                    À venir
+                                </div>
+                            )}
+                        </div>
+                    )}
                     <p className="text-foreground/80 text-sm leading-relaxed line-clamp-2 lg:opacity-100 lg:group-hover:opacity-0 transition-opacity duration-300">
                         {desc}
                     </p>
                 </div>
 
-                {/* Price + Status */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        {price ? (
-                            <span className="text-sm font-bold text-foreground">
-                                {price.toFixed(2)} <span className="text-xs text-foreground/60 font-normal">{currency}</span>
-                            </span>
-                        ) : status === "coming_soon" ? (
-                            <span className="text-sm font-semibold text-primary">
-                                À venir
-                            </span>
-                        ) : null}
-                    </div>
-
+                <div className="flex items-center justify-end">
                     {/* Mobile-only action link */}
                     <Link
                         href={href}
